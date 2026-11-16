@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EQ &amp; IQ Compass — Trắc Nghiệm &amp; Đánh Giá Trí Tuệ Cảm Xúc &amp; IQ</title>
+  <title>EQ, IQ &amp; Tính Cách Compass — Đánh Giá Năng Lực Toàn Diện</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -21,7 +21,7 @@
           <span class="brand-logo" aria-hidden="true">🧭</span>
           <span class="brand-text">
             <strong>EQ &amp; IQ Compass</strong>
-            <small>Đo lường Trí tuệ Cảm xúc (EQ) &amp; Tư duy Logic (IQ)</small>
+            <small>Đo lường EQ • IQ • Tính cách &amp; Hướng nghiệp</small>
           </span>
         </button>
 
@@ -29,11 +29,14 @@
           <button type="button" class="nav-link active" id="btn-nav-tests">
             <span>📚</span> Kho Bộ Đề
           </button>
+          <button type="button" class="nav-link" id="btn-open-leaderboard">
+            <span>🏆</span> Bảng xếp hạng
+          </button>
           <button type="button" class="nav-link" id="btn-open-history">
             <span>🕘</span> Lịch sử <span class="nav-badge" id="history-count-badge">0</span>
           </button>
           <button type="button" class="nav-link" id="btn-open-guide">
-            <span>💡</span> Cẩm nang EQ &amp; IQ
+            <span>💡</span> Cẩm nang
           </button>
           <button
             type="button"
@@ -54,12 +57,12 @@
       <section id="home-view" class="view active" aria-labelledby="hero-title">
         <div class="hero-card">
           <div class="hero-copy">
-            <span class="hero-pill">10 Bộ Đề Chuẩn • 122 Câu Hỏi • Biểu Đồ Radar Kép EQ × IQ</span>
-            <h1 id="hero-title">Khám Phá Chỉ Số EQ &amp; IQ Toàn Diện Của Bạn</h1>
+            <span class="hero-pill">13 Bộ Đề Chuẩn • 162 Câu Hỏi • Tam Giác EQ × IQ × Tính Cách</span>
+            <h1 id="hero-title">Khám Phá Bản Đồ EQ, IQ &amp; Tính Cách Toàn Diện</h1>
             <p>
-              Đo lường song song <strong>Trí tuệ Cảm xúc (EQ)</strong> qua tình huống đời thực và
-              <strong>Trí tuệ Logic (IQ)</strong> qua ma trận hình ảnh SVG, quy luật số học &amp; suy luận.
-              Tự động phân tích 5 trụ cột và xuất thẻ chứng nhận PNG chia sẻ.
+              Trắc nghiệm chuyên sâu 3 trụ cột con người: <strong>Trí tuệ Cảm xúc (EQ)</strong>,
+              <strong>Tư duy Logic (IQ + ma trận SVG)</strong> và <strong>Tính cách OCEAN / MBTI</strong>.
+              Tự động xuất thẻ chứng nhận PNG, link URL chia sẻ cho bạn bè và đối chiếu Bảng xếp hạng.
             </p>
             <div class="hero-cta-row">
               <button type="button" class="btn btn-primary btn-lg" id="btn-quick-start">
@@ -68,6 +71,9 @@
               <button type="button" class="btn btn-secondary btn-lg" id="btn-quick-start-iq">
                 🧠 Đề Chuẩn IQ (15 câu)
               </button>
+              <button type="button" class="btn btn-secondary btn-lg" id="btn-quick-start-personality">
+                🎭 Test Tính cách OCEAN (15 câu)
+              </button>
               <button type="button" class="btn btn-secondary btn-lg" id="btn-start-5min">
                 ⚡ Test nhanh 5 phút
               </button>
@@ -75,41 +81,48 @@
           </div>
           <div class="hero-pillars-preview" aria-hidden="true">
             <div class="mini-pillar"><span>🧭</span> 6 Bộ Đề EQ (72 tình huống)</div>
-            <div class="mini-pillar"><span>🧠</span> 4 Bộ Đề IQ (50 câu đố + SVG)</div>
-            <div class="mini-pillar"><span>📊</span> Biểu đồ Radar 5 trục chuyên sâu</div>
-            <div class="mini-pillar"><span>🎭</span> Hồ sơ Kép EQ × IQ cá nhân</div>
-            <div class="mini-pillar"><span>🖼️</span> Tải Thẻ Kết Quả PNG chia sẻ</div>
+            <div class="mini-pillar"><span>🧠</span> 4 Bộ Đề IQ (50 câu + hình SVG)</div>
+            <div class="mini-pillar"><span>🎭</span> 3 Bộ Đề Tính cách &amp; Hướng nghiệp</div>
+            <div class="mini-pillar"><span>🏆</span> Bảng xếp hạng &amp; Link chia sẻ URL</div>
+            <div class="mini-pillar"><span>🖼️</span> Tải Thẻ Chứng Nhận PNG</div>
           </div>
         </div>
 
-        <!-- Dual Intelligence Profile Stats -->
-        <div class="stats-grid" id="user-stats-grid">
+        <!-- Triangle Competence Profile Stats -->
+        <div class="stats-grid stats-grid-5" id="user-stats-grid">
           <div class="stat-card">
             <div class="stat-icon">📝</div>
             <div class="stat-body">
-              <span class="stat-label">Bài test đã hoàn thành</span>
+              <span class="stat-label">Bài đã hoàn thành</span>
               <strong class="stat-value" id="stat-completed-count">0</strong>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">🧭</div>
             <div class="stat-body">
-              <span class="stat-label">EQ Trung bình (55–145)</span>
+              <span class="stat-label">EQ Trung bình</span>
               <strong class="stat-value" id="stat-avg-eq">--</strong>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">🧠</div>
             <div class="stat-body">
-              <span class="stat-label">IQ Trung bình (70–145)</span>
+              <span class="stat-label">IQ Trung bình</span>
               <strong class="stat-value" id="stat-avg-iq">--</strong>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🎭</div>
+            <div class="stat-body">
+              <span class="stat-label">Hình mẫu Tính cách</span>
+              <strong class="stat-value stat-value-sm" id="stat-avg-personality">Chưa làm bài</strong>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">✨</div>
             <div class="stat-body">
-              <span class="stat-label">Hồ sơ Kép EQ × IQ</span>
-              <strong class="stat-value stat-value-sm" id="stat-dual-profile">Làm đủ 1 EQ &amp; 1 IQ để mở khóa</strong>
+              <span class="stat-label">Hồ sơ Tam giác</span>
+              <strong class="stat-value stat-value-sm" id="stat-dual-profile">Làm EQ, IQ &amp; Tính cách để mở khóa</strong>
             </div>
           </div>
         </div>
@@ -140,17 +153,20 @@
           </div>
         </div>
 
-        <!-- Domain Switch Tabs (All / EQ / IQ) -->
+        <!-- Domain Switch Tabs (All / EQ / IQ / Personality) -->
         <div class="domain-tabs-row">
           <div class="domain-tabs" id="domain-tabs" role="tablist" aria-label="Chọn nhóm đề">
             <button type="button" class="domain-tab active" data-domain="all">
-              📚 Tất cả bộ đề <span class="tab-count">10</span>
+              📚 Tất cả <span class="tab-count">13</span>
             </button>
             <button type="button" class="domain-tab" data-domain="eq">
-              🧭 Đề Test EQ <span class="tab-count">6</span>
+              🧭 EQ <span class="tab-count">6</span>
             </button>
             <button type="button" class="domain-tab" data-domain="iq">
-              🧠 Đề Test IQ <span class="tab-count">4</span>
+              🧠 IQ <span class="tab-count">4</span>
+            </button>
+            <button type="button" class="domain-tab" data-domain="personality">
+              🎭 Tính cách &amp; Nghề <span class="tab-count">3</span>
             </button>
           </div>
 
@@ -159,7 +175,7 @@
             <input
               type="search"
               id="test-search-input"
-              placeholder="Tìm bộ đề (vd: IQ, ma trận, công sở, cơn giận...)"
+              placeholder="Tìm bộ đề (vd: IQ, MBTI, hướng nghiệp, công sở...)"
               aria-label="Tìm kiếm bộ đề"
             />
           </div>
@@ -179,6 +195,9 @@
             <button type="button" class="filter-pill" data-category="iq-logic">IQ Số &amp; Logic</button>
             <button type="button" class="filter-pill" data-category="iq-spatial">IQ Không gian</button>
             <button type="button" class="filter-pill" data-category="iq-quick">IQ 5 phút</button>
+            <button type="button" class="filter-pill" data-category="personality-ocean">Big Five OCEAN</button>
+            <button type="button" class="filter-pill" data-category="personality-mbti">Khí chất MBTI</button>
+            <button type="button" class="filter-pill" data-category="personality-career">Hướng nghiệp</button>
           </div>
         </div>
 
@@ -187,7 +206,7 @@
         <div class="empty-state hidden" id="tests-empty-state">
           <div class="empty-emoji">🔍</div>
           <h3>Không tìm thấy bộ đề phù hợp</h3>
-          <p>Thử xóa từ khóa tìm kiếm hoặc chọn mục "Tất cả" để xem đầy đủ 10 bộ đề EQ &amp; IQ.</p>
+          <p>Thử xóa từ khóa tìm kiếm hoặc chọn mục "Tất cả" để xem đầy đủ 13 bộ đề.</p>
           <button type="button" class="btn btn-secondary" id="btn-reset-filters">Hiển thị tất cả đề</button>
         </div>
       </section>
@@ -302,6 +321,16 @@
 
       <!-- ==================== VIEW 3: RESULTS & EVALUATION ==================== -->
       <section id="result-view" class="view hidden" aria-label="Kết quả và đánh giá">
+        <div class="shared-banner card hidden no-print" id="shared-result-banner">
+          <div>
+            <strong>🔗 Bạn đang xem bảng kết quả được chia sẻ</strong>
+            <p id="shared-banner-text">Người bạn của bạn vừa chia sẻ kết quả đánh giá này.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-try-shared-test">
+            🚀 Thi thử bộ đề này ngay
+          </button>
+        </div>
+
         <div class="result-toolbar no-print">
           <div class="result-meta">
             <span class="result-test-name" id="result-test-name">Tên bộ đề</span>
@@ -311,6 +340,9 @@
             <span id="result-time-spent">Thời gian: 03:20</span>
           </div>
           <div class="result-actions">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-share-link">
+              🔗 Copy Link Chia Sẻ
+            </button>
             <button type="button" class="btn btn-secondary btn-sm" id="btn-download-card">
               🖼️ Tải thẻ ảnh PNG
             </button>
@@ -320,7 +352,7 @@
             <button type="button" class="btn btn-secondary btn-sm" id="btn-print-result">
               🖨️ In / Lưu PDF
             </button>
-            <button type="button" class="btn btn-primary btn-sm" id="btn-retake-test">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-retake-test">
               🔄 Làm lại đề này
             </button>
             <button type="button" class="btn btn-ghost btn-sm" id="btn-back-to-hub">
@@ -347,6 +379,17 @@
             <span class="level-badge" id="result-level-badge">Cấp độ 4/5 • EQ Cao</span>
             <h2 class="level-title" id="result-level-title">Tinh Tế, Vững Vàng &amp; Giao Tiếp Khéo Léo</h2>
             <p class="level-summary" id="result-level-summary"></p>
+
+            <!-- Personality Archetype & Career Box -->
+            <div class="archetype-box hidden" id="archetype-box">
+              <div class="archetype-head">
+                <strong id="archetype-name">🎭 Kiến Trúc Sư Chiến Lược</strong>
+                <span class="archetype-mbti" id="archetype-mbti">INTJ / ENTP</span>
+              </div>
+              <p id="archetype-summary"></p>
+              <div class="archetype-careers" id="archetype-careers"></div>
+            </div>
+
             <div class="level-advice-box">
               <strong>🧭 Định hướng phát triển:</strong>
               <p id="result-level-advice"></p>
@@ -425,7 +468,7 @@
         </section>
 
         <!-- Detailed Question-by-Question Review -->
-        <section class="card section-block">
+        <section class="card section-block" id="review-section">
           <div class="section-head review-head">
             <div>
               <h3 id="review-section-title">Xem Lại Đáp Án &amp; Giải Thích Chi Tiết Từng Câu</h3>
@@ -445,8 +488,8 @@
     <!-- Footer -->
     <footer class="app-footer no-print">
       <div class="container footer-inner">
-        <span>EQ &amp; IQ Compass — Nền tảng tự đánh giá Trí tuệ Cảm xúc (EQ) &amp; Tư duy Logic (IQ).</span>
-        <span>Kết quả được lưu cục bộ trên trình duyệt của bạn.</span>
+        <span>EQ &amp; IQ Compass — Nền tảng đánh giá Trí tuệ Cảm xúc (EQ), Tư duy Logic (IQ) &amp; Tính cách OCEAN.</span>
+        <span>Dữ liệu được lưu cục bộ trên trình duyệt của bạn.</span>
       </div>
     </footer>
   </div>
@@ -490,7 +533,7 @@
   <div class="modal-backdrop hidden" id="history-modal" role="dialog" aria-modal="true" aria-labelledby="history-modal-title">
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
-        <h3 id="history-modal-title">🕘 Lịch Sử Các Bài Đánh Giá EQ &amp; IQ</h3>
+        <h3 id="history-modal-title">🕘 Lịch Sử Các Bài Đánh Giá EQ • IQ • Tính Cách</h3>
         <button type="button" class="modal-close" data-close-modal="history-modal" aria-label="Đóng">✕</button>
       </div>
       <div class="modal-body">
@@ -505,11 +548,42 @@
     </div>
   </div>
 
-  <!-- ==================== MODAL: EQ & IQ GUIDE ==================== -->
+  <!-- ==================== MODAL: LEADERBOARD ==================== -->
+  <div class="modal-backdrop hidden" id="leaderboard-modal" role="dialog" aria-modal="true" aria-labelledby="leaderboard-modal-title">
+    <div class="modal-card modal-card-lg">
+      <div class="modal-header">
+        <h3 id="leaderboard-modal-title">🏆 Bảng Xếp Hạng &amp; Đối Chiếu Cộng Đồng</h3>
+        <button type="button" class="modal-close" data-close-modal="leaderboard-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="player-name-bar">
+          <label for="player-name-input">Tên hiển thị của bạn:</label>
+          <div class="player-name-inputs">
+            <input type="text" id="player-name-input" maxlength="30" placeholder="Nhập tên của bạn (vd: Tân, Minh Anh...)" />
+            <button type="button" class="btn btn-primary btn-sm" id="btn-save-player-name">Lưu tên</button>
+          </div>
+        </div>
+
+        <div class="filter-pills" id="leaderboard-filters" style="margin-bottom: 14px;">
+          <button type="button" class="filter-pill active" data-lb-filter="all">🏆 Tổng hợp</button>
+          <button type="button" class="filter-pill" data-lb-filter="eq">🧭 Top EQ</button>
+          <button type="button" class="filter-pill" data-lb-filter="iq">🧠 Top IQ</button>
+          <button type="button" class="filter-pill" data-lb-filter="personality">🎭 Top Tính cách</button>
+        </div>
+
+        <div id="leaderboard-list" class="leaderboard-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-close-modal="leaderboard-modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: EQ & IQ & OCEAN GUIDE ==================== -->
   <div class="modal-backdrop hidden" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-modal-title">
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
-        <h3 id="guide-modal-title">💡 Cẩm Nang 5 Trụ Cột EQ &amp; 5 Trụ Cột IQ</h3>
+        <h3 id="guide-modal-title">💡 Cẩm Nang Toàn Diện: EQ • IQ • Big Five OCEAN</h3>
         <button type="button" class="modal-close" data-close-modal="guide-modal" aria-label="Đóng">✕</button>
       </div>
       <div class="modal-body guide-body" id="guide-modal-content"></div>
@@ -524,6 +598,7 @@
 
   <script src="js/data.js"></script>
   <script src="js/iq-data.js"></script>
+  <script src="js/personality-data.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

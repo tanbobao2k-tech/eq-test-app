@@ -8,7 +8,8 @@
 
   const STORAGE_KEYS = {
     HISTORY: "eq_test_history_v1",
-    THEME: "eq_compass_theme_v1"
+    THEME: "eq_compass_theme_v1",
+    PLAYER_NAME: "eq_compass_player_name_v1"
   };
 
   const EQ_DIMENSION_ORDER = [
@@ -27,7 +28,26 @@
     "working_memory"
   ];
 
+  const PERSONALITY_DIMENSION_ORDER = [
+    "openness",
+    "conscientiousness",
+    "extraversion",
+    "agreeableness",
+    "stability"
+  ];
+
   const LETTERS = ["A", "B", "C", "D"];
+
+  const COMMUNITY_BENCHMARKS = [
+    { name: "Minh Quân", type: "iq", score: 136, label: "Top 2% • Chuẩn IQ" },
+    { name: "Thảo Vy", type: "eq", score: 134, label: "Xuất sắc • EQ Toàn diện" },
+    { name: "Hoàng Nam", type: "personality", score: 131, label: "Kiến Trúc Sư Chiến Lược" },
+    { name: "Khánh Linh", type: "eq", score: 126, label: "EQ Cao • Giao tiếp tinh tế" },
+    { name: "Đức Anh", type: "iq", score: 124, label: "IQ Cao • Logic & Số học" },
+    { name: "Bảo Ngọc", type: "personality", score: 121, label: "Nhà Sáng Tạo Nhân Văn" },
+    { name: "Tuấn Kiệt", type: "iq", score: 112, label: "IQ Khá • Không gian 3D" },
+    { name: "Lan Phương", type: "eq", score: 109, label: "EQ Khá • Công sở" }
+  ];
 
   const state = {
     view: "home",
@@ -37,7 +57,9 @@
     activeCategory: "all",
     searchQuery: "",
     theme: "light",
+    playerName: "",
     history: [],
+    leaderboardFilter: "all",
 
     // Active quiz session
     currentTest: null,
@@ -62,6 +84,7 @@
 
     navHomeBtn: document.getElementById("nav-home-btn"),
     btnNavTests: document.getElementById("btn-nav-tests"),
+    btnOpenLeaderboard: document.getElementById("btn-open-leaderboard"),
     btnOpenHistory: document.getElementById("btn-open-history"),
     btnOpenGuide: document.getElementById("btn-open-guide"),
     btnToggleTheme: document.getElementById("btn-toggle-theme"),
@@ -70,10 +93,12 @@
 
     btnQuickStart: document.getElementById("btn-quick-start"),
     btnQuickStartIq: document.getElementById("btn-quick-start-iq"),
+    btnQuickStartPersonality: document.getElementById("btn-quick-start-personality"),
     btnStart5Min: document.getElementById("btn-start-5min"),
     statCompletedCount: document.getElementById("stat-completed-count"),
     statAvgEq: document.getElementById("stat-avg-eq"),
     statAvgIq: document.getElementById("stat-avg-iq"),
+    statAvgPersonality: document.getElementById("stat-avg-personality"),
     statDualProfile: document.getElementById("stat-dual-profile"),
 
     modeStandardBtn: document.getElementById("mode-standard-btn"),
@@ -123,9 +148,13 @@
     btnSubmitQuiz: document.getElementById("btn-submit-quiz"),
 
     // Result
+    sharedResultBanner: document.getElementById("shared-result-banner"),
+    sharedBannerText: document.getElementById("shared-banner-text"),
+    btnTrySharedTest: document.getElementById("btn-try-shared-test"),
     resultTestName: document.getElementById("result-test-name"),
     resultTimestamp: document.getElementById("result-timestamp"),
     resultTimeSpent: document.getElementById("result-time-spent"),
+    btnShareLink: document.getElementById("btn-share-link"),
     btnDownloadCard: document.getElementById("btn-download-card"),
     btnCopyResult: document.getElementById("btn-copy-result"),
     btnPrintResult: document.getElementById("btn-print-result"),
@@ -141,6 +170,11 @@
     resultLevelBadge: document.getElementById("result-level-badge"),
     resultLevelTitle: document.getElementById("result-level-title"),
     resultLevelSummary: document.getElementById("result-level-summary"),
+    archetypeBox: document.getElementById("archetype-box"),
+    archetypeName: document.getElementById("archetype-name"),
+    archetypeMbti: document.getElementById("archetype-mbti"),
+    archetypeSummary: document.getElementById("archetype-summary"),
+    archetypeCareers: document.getElementById("archetype-careers"),
     resultLevelAdvice: document.getElementById("result-level-advice"),
     spectrumLabelLow: document.getElementById("spectrum-label-low"),
     spectrumLabelMid: document.getElementById("spectrum-label-mid"),
@@ -164,6 +198,7 @@
     dimensionsSectionTitle: document.getElementById("dimensions-section-title"),
     dimensionsSectionSubtitle: document.getElementById("dimensions-section-subtitle"),
     dimensionsBreakdown: document.getElementById("dimensions-breakdown"),
+    reviewSection: document.getElementById("review-section"),
     reviewSectionTitle: document.getElementById("review-section-title"),
     reviewSectionSubtitle: document.getElementById("review-section-subtitle"),
     reviewFilters: document.getElementById("review-filters"),
@@ -184,6 +219,12 @@
     historyList: document.getElementById("history-list"),
     btnClearHistory: document.getElementById("btn-clear-history"),
 
+    leaderboardModal: document.getElementById("leaderboard-modal"),
+    playerNameInput: document.getElementById("player-name-input"),
+    btnSavePlayerName: document.getElementById("btn-save-player-name"),
+    leaderboardFilters: document.getElementById("leaderboard-filters"),
+    leaderboardList: document.getElementById("leaderboard-list"),
+
     guideModal: document.getElementById("guide-modal"),
     guideModalContent: document.getElementById("guide-modal-content"),
 
@@ -192,12 +233,16 @@
 
   // ==================== HELPERS ====================
   function getTestType(test) {
-    return test && test.testType === "iq" ? "iq" : "eq";
+    if (!test) return "eq";
+    if (test.testType === "iq" || test.testType === "personality" || test.testType === "eq") {
+      return test.testType;
+    }
+    return "eq";
   }
 
   function getTestConfig(test) {
-    const isIq = getTestType(test) === "iq";
-    if (isIq) {
+    const tType = getTestType(test);
+    if (tType === "iq") {
       return {
         testType: "iq",
         dimensionsMap: DATA.IQ_DIMENSIONS,
@@ -206,7 +251,21 @@
         minIndex: 70,
         maxIndex: 145,
         indexLabel: "CHỈ SỐ IQ",
-        shortLabel: "IQ"
+        shortLabel: "IQ",
+        badgeText: "IQ"
+      };
+    }
+    if (tType === "personality") {
+      return {
+        testType: "personality",
+        dimensionsMap: DATA.PERSONALITY_DIMENSIONS,
+        dimensionOrder: PERSONALITY_DIMENSION_ORDER,
+        levels: DATA.PERSONALITY_LEVELS,
+        minIndex: 60,
+        maxIndex: 145,
+        indexLabel: "CHỈ SỐ OCEAN",
+        shortLabel: "OCEAN",
+        badgeText: "TÍNH CÁCH"
       };
     }
     return {
@@ -217,7 +276,8 @@
       minIndex: 55,
       maxIndex: 145,
       indexLabel: "CHỈ SỐ EQ",
-      shortLabel: "EQ"
+      shortLabel: "EQ",
+      badgeText: "EQ"
     };
   }
 
@@ -253,14 +313,12 @@
   }
 
   function showToast(message) {
-    if (state.toastTimer) {
-      clearTimeout(state.toastTimer);
-    }
+    if (state.toastTimer) clearTimeout(state.toastTimer);
     els.toast.textContent = message;
     els.toast.classList.remove("hidden");
     state.toastTimer = setTimeout(() => {
       els.toast.classList.add("hidden");
-    }, 2800);
+    }, 3000);
   }
 
   function loadHistory() {
@@ -281,12 +339,31 @@
     }
   }
 
+  function loadPlayerName() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.PLAYER_NAME);
+      state.playerName = saved ? saved.trim() : "";
+    } catch (_err) {
+      state.playerName = "";
+    }
+    if (els.playerNameInput) {
+      els.playerNameInput.value = state.playerName;
+    }
+  }
+
+  function savePlayerName(name) {
+    state.playerName = String(name || "").trim().slice(0, 30);
+    try {
+      localStorage.setItem(STORAGE_KEYS.PLAYER_NAME, state.playerName);
+    } catch (_err) {
+      // Ignore
+    }
+  }
+
   function loadTheme() {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.THEME);
-      if (saved === "dark" || saved === "light") {
-        state.theme = saved;
-      }
+      if (saved === "dark" || saved === "light") state.theme = saved;
     } catch (_err) {
       state.theme = "light";
     }
@@ -342,33 +419,43 @@
       !els.submitConfirmModal.classList.contains("hidden") ||
       !els.exitConfirmModal.classList.contains("hidden") ||
       !els.historyModal.classList.contains("hidden") ||
+      !els.leaderboardModal.classList.contains("hidden") ||
       !els.guideModal.classList.contains("hidden")
     );
   }
 
-  // ==================== HOME VIEW & DUAL PROFILE ====================
+  // ==================== HOME VIEW & TRIANGLE PROFILE ====================
   function getHistoryItemType(item) {
-    if (item.testType === "iq" || item.testType === "eq") return item.testType;
-    return String(item.testId || "").startsWith("iq-") ? "iq" : "eq";
+    if (item.testType === "iq" || item.testType === "personality" || item.testType === "eq") {
+      return item.testType;
+    }
+    const id = String(item.testId || "");
+    if (id.startsWith("iq-")) return "iq";
+    if (id.startsWith("ocean-") || id.startsWith("mbti-") || id.startsWith("career-")) return "personality";
+    return "eq";
   }
 
   function getHistoryScoreIndex(item) {
     return typeof item.scoreIndex === "number" ? item.scoreIndex : item.eqIndex;
   }
 
-  function computeDualProfileTitle(avgEq, avgIq) {
-    if (avgEq !== null && avgIq !== null) {
-      const highEq = avgEq >= 115;
-      const highIq = avgIq >= 115;
-      if (highEq && highIq) return "🌟 Nhà Lãnh Đạo Toàn Diện";
-      if (highIq && !highEq) return "🔬 Kiến Trúc Sư Phân Tích";
-      if (!highIq && highEq) return "💞 Người Kết Nối Thấu Cảm";
-      if (avgEq >= 100 && avgIq >= 100) return "⚖️ Lý Trí & Cảm Xúc Cân Bằng";
-      return "🌱 Người Khai Phá Tiềm Năng Kép";
+  function computeTriangleProfileTitle(avgEq, avgIq, archetypeName) {
+    const hasEq = avgEq !== null;
+    const hasIq = avgIq !== null;
+    const hasPers = Boolean(archetypeName);
+
+    if (hasEq && hasIq && hasPers) {
+      if (avgEq >= 115 && avgIq >= 115) return `👑 Thủ Lĩnh Toàn Tài • ${archetypeName}`;
+      if (avgEq >= 100 && avgIq >= 100) return `🌟 Tam Giác Cân Bằng • ${archetypeName}`;
+      return `🚀 Khai Phá Toàn Diện • ${archetypeName}`;
     }
-    if (avgEq !== null) return "Cần làm thêm 1 đề IQ để mở khóa";
-    if (avgIq !== null) return "Cần làm thêm 1 đề EQ để mở khóa";
-    return "Làm đủ 1 EQ & 1 IQ để mở khóa";
+
+    const missing = [];
+    if (!hasEq) missing.push("EQ");
+    if (!hasIq) missing.push("IQ");
+    if (!hasPers) missing.push("Tính cách");
+    if (missing.length === 3) return "Làm đủ EQ, IQ & Tính cách để mở khóa";
+    return `Cần thêm ${missing.join(" + ")} để mở khóa`;
   }
 
   function updateUserStats() {
@@ -377,6 +464,7 @@
 
     const eqItems = state.history.filter((h) => getHistoryItemType(h) === "eq");
     const iqItems = state.history.filter((h) => getHistoryItemType(h) === "iq");
+    const persItems = state.history.filter((h) => getHistoryItemType(h) === "personality");
 
     const avgEq =
       eqItems.length > 0
@@ -387,9 +475,15 @@
         ? Math.round(iqItems.reduce((s, x) => s + (getHistoryScoreIndex(x) || 0), 0) / iqItems.length)
         : null;
 
+    let latestArchetype = null;
+    if (persItems.length > 0) {
+      latestArchetype = persItems[0].archetypeName || "Đã định vị";
+    }
+
     els.statAvgEq.textContent = avgEq !== null ? String(avgEq) : "--";
     els.statAvgIq.textContent = avgIq !== null ? String(avgIq) : "--";
-    els.statDualProfile.textContent = computeDualProfileTitle(avgEq, avgIq);
+    els.statAvgPersonality.textContent = latestArchetype || "Chưa làm bài";
+    els.statDualProfile.textContent = computeTriangleProfileTitle(avgEq, avgIq, latestArchetype);
   }
 
   function getBestRecordForTest(testId) {
@@ -410,10 +504,13 @@
         return;
       }
       const isIqCat = cat.startsWith("iq-");
+      const isPersCat = cat.startsWith("personality-");
+      const isEqCat = !isIqCat && !isPersCat;
       const show =
         state.activeDomain === "all" ||
         (state.activeDomain === "iq" && isIqCat) ||
-        (state.activeDomain === "eq" && !isIqCat);
+        (state.activeDomain === "personality" && isPersCat) ||
+        (state.activeDomain === "eq" && isEqCat);
       pill.classList.toggle("hidden", !show);
     });
   }
@@ -435,24 +532,26 @@
 
     filtered.forEach((test) => {
       const tType = getTestType(test);
+      const cfg = getTestConfig(test);
       const best = getBestRecordForTest(test.id);
       const card = document.createElement("article");
       card.className = "test-card";
       card.style.setProperty("--card-accent", test.accentColor);
 
       const bestBadgeHtml = best
-        ? `<span class="badge-best">Kỷ lục: ${tType.toUpperCase()} ${getHistoryScoreIndex(best)} (${best.pct}%)</span>`
+        ? `<span class="badge-best">Kỷ lục: ${cfg.shortLabel} ${getHistoryScoreIndex(best)} (${best.pct}%)</span>`
         : "";
 
       const tagsHtml = test.tags.map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`).join("");
-      const unitHint = tType === "iq" ? "câu đố logic" : "câu tình huống";
+      const unitHint =
+        tType === "iq" ? "câu đố logic" : tType === "personality" ? "câu trắc nghiệm" : "câu tình huống";
 
       card.innerHTML = `
         <div class="test-card-top">
           <div class="test-icon-wrap">${test.icon}</div>
           <div class="test-badges">
             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
-              <span class="badge-type-pill ${tType}">${tType.toUpperCase()}</span>
+              <span class="badge-type-pill ${tType}">${cfg.badgeText}</span>
               <span class="badge-level">${escapeHtml(test.categoryLabel)} • ${escapeHtml(test.level)}</span>
             </div>
             ${bestBadgeHtml}
@@ -534,7 +633,13 @@
     startTimer();
   }
 
-  function getEqScoreLabel(score) {
+  function getScaleScoreLabel(score, testType) {
+    if (testType === "personality") {
+      if (score === 4) return { label: "Biểu đạt rất mạnh (4/4đ)", cls: "score-4" };
+      if (score === 3) return { label: "Biểu đạt khá rõ (3/4đ)", cls: "score-3" };
+      if (score === 2) return { label: "Biểu đạt trung bình (2/4đ)", cls: "score-2" };
+      return { label: "Thiên hướng đối lập (1/4đ)", cls: "score-1" };
+    }
     if (score === 4) return { label: "Phản ứng tối ưu (4/4đ)", cls: "score-4" };
     if (score === 3) return { label: "Ứng xử tích cực (3/4đ)", cls: "score-3" };
     if (score === 2) return { label: "Chưa thực sự hiệu quả (2/4đ)", cls: "score-2" };
@@ -569,7 +674,6 @@
 
     els.questionText.textContent = q.question;
 
-    // SVG visual diagram for spatial/IQ questions
     if (q.svgDiagram) {
       els.questionVisual.innerHTML = q.svgDiagram;
       els.questionVisual.classList.remove("hidden");
@@ -578,7 +682,6 @@
       els.questionVisual.classList.add("hidden");
     }
 
-    // Render options
     const selectedOptIdx = state.answers[idx];
     const hasAnswered = selectedOptIdx !== undefined;
     els.optionsList.innerHTML = "";
@@ -604,7 +707,7 @@
         }
       } else if (state.mode === "practice" && hasAnswered) {
         const isBest = cfg.testType === "iq" ? opt.isCorrect : opt.score === 4;
-        if (isBest) btn.classList.add("practice-score-4");
+        if (isBest && cfg.testType !== "personality") btn.classList.add("practice-score-4");
       }
 
       let scoreTagHtml = "";
@@ -612,7 +715,7 @@
         if (cfg.testType === "iq") {
           if (opt.isCorrect) scoreTagHtml = `<span class="option-score-tag">✓ Đúng</span>`;
           else if (isSelected) scoreTagHtml = `<span class="option-score-tag">✕ Sai</span>`;
-        } else if (isSelected || opt.score === 4) {
+        } else if (isSelected || (cfg.testType === "eq" && opt.score === 4)) {
           scoreTagHtml = `<span class="option-score-tag">${opt.score}/4đ</span>`;
         }
       }
@@ -627,7 +730,6 @@
       els.optionsList.appendChild(btn);
     });
 
-    // Render instant feedback if practice mode & answered
     if (state.mode === "practice" && hasAnswered) {
       const chosen = q.options[selectedOptIdx];
       els.practiceFeedback.classList.remove("hidden");
@@ -638,8 +740,14 @@
           ? "Tuyệt vời! Bạn đã giải đúng câu này."
           : "Chưa chính xác — hãy xem lời giải từng bước bên dưới.";
         els.feedbackInsightLabel.textContent = "📐 Lời giải chi tiết:";
+      } else if (cfg.testType === "personality") {
+        const meta = getScaleScoreLabel(chosen.score, "personality");
+        els.feedbackScorePill.textContent = `${chosen.score}/4 điểm`;
+        els.feedbackScorePill.className = `feedback-score-pill ${meta.cls}`;
+        els.feedbackVerdict.textContent = meta.label;
+        els.feedbackInsightLabel.textContent = "🎭 Phân tích tính cách:";
       } else {
-        const meta = getEqScoreLabel(chosen.score);
+        const meta = getScaleScoreLabel(chosen.score, "eq");
         els.feedbackScorePill.textContent = `${chosen.score}/4 điểm`;
         els.feedbackScorePill.className = `feedback-score-pill ${meta.cls}`;
         els.feedbackVerdict.textContent = meta.label;
@@ -692,11 +800,8 @@
   }
 
   function toggleFlagCurrent() {
-    if (state.flags.has(state.currentIndex)) {
-      state.flags.delete(state.currentIndex);
-    } else {
-      state.flags.add(state.currentIndex);
-    }
+    if (state.flags.has(state.currentIndex)) state.flags.delete(state.currentIndex);
+    else state.flags.add(state.currentIndex);
     renderQuizQuestion();
     renderPalette();
   }
@@ -707,9 +812,7 @@
 
     const missing = [];
     for (let i = 0; i < test.questions.length; i++) {
-      if (state.answers[i] === undefined) {
-        missing.push(i);
-      }
+      if (state.answers[i] === undefined) missing.push(i);
     }
 
     if (missing.length === 0) {
@@ -750,13 +853,43 @@
   }
 
   // ==================== SCORING & EVALUATION ENGINE ====================
+  function buildDimensionsResult(cfg, dimStats, overridesDimPcts) {
+    return cfg.dimensionOrder.map((dimId, idx) => {
+      const meta = cfg.dimensionsMap[dimId];
+      const stat = dimStats ? dimStats[dimId] : { score: 0, max: 100, count: 1 };
+      let dimPct = 0;
+      if (overridesDimPcts) {
+        dimPct = Number(overridesDimPcts[idx] || 0);
+      } else if (cfg.testType === "iq") {
+        dimPct = stat.count > 0 ? Math.round((stat.score / stat.count) * 100) : 0;
+      } else {
+        dimPct = stat.max > stat.min ? Math.round(((stat.score - stat.min) / (stat.max - stat.min)) * 100) : 0;
+      }
+
+      const tier = dimPct >= 75 ? "high" : dimPct >= 50 ? "medium" : "low";
+      const tierLabel = tier === "high" ? "Vững vàng" : tier === "medium" ? "Khá ổn" : "Cần bồi đắp";
+      return {
+        id: dimId,
+        meta,
+        score: stat.score,
+        max: stat.max,
+        count: stat.count,
+        pct: dimPct,
+        tier,
+        tierLabel,
+        evaluation: meta.evaluations[tier],
+        tips: meta.tips
+      };
+    });
+  }
+
   function evaluateSubmission(test, answersMap, timeSpentSeconds, mode, timestampIso) {
     const cfg = getTestConfig(test);
     const totalQ = test.questions.length;
 
     const dimStats = {};
     cfg.dimensionOrder.forEach((dimId) => {
-      dimStats[dimId] = { score: 0, min: 0, max: 0, count: 0, weightEarned: 0, weightMax: 0 };
+      dimStats[dimId] = { score: 0, min: 0, max: 0, count: 0 };
     });
 
     let rawScore = 0;
@@ -786,8 +919,6 @@
         dStat.score += earned;
         dStat.max += 1;
         dStat.count += 1;
-        dStat.weightMax += weight;
-        if (isCorrect) dStat.weightEarned += weight;
       } else {
         earned = chosenOption ? chosenOption.score : 1;
         rawScore += earned;
@@ -825,36 +956,15 @@
     }
 
     const level = cfg.levels.find((lvl) => pct >= lvl.minPct) || cfg.levels[cfg.levels.length - 1];
-
-    const dimensions = cfg.dimensionOrder.map((dimId) => {
-      const meta = cfg.dimensionsMap[dimId];
-      const stat = dimStats[dimId];
-      let dimPct = 0;
-      if (cfg.testType === "iq") {
-        dimPct = stat.count > 0 ? Math.round((stat.score / stat.count) * 100) : 0;
-      } else {
-        dimPct = stat.max > stat.min ? Math.round(((stat.score - stat.min) / (stat.max - stat.min)) * 100) : 0;
-      }
-      const tier = dimPct >= 75 ? "high" : dimPct >= 50 ? "medium" : "low";
-      const tierLabel = tier === "high" ? "Vững vàng" : tier === "medium" ? "Khá ổn" : "Cần bồi đắp";
-      return {
-        id: dimId,
-        meta,
-        score: stat.score,
-        max: stat.max,
-        count: stat.count,
-        pct: dimPct,
-        tier,
-        tierLabel,
-        evaluation: meta.evaluations[tier],
-        tips: meta.tips
-      };
-    });
-
+    const dimensions = buildDimensionsResult(cfg, dimStats, null);
     const activeDims = dimensions.filter((d) => d.count > 0);
     const sortedByPctDesc = activeDims.slice().sort((a, b) => b.pct - a.pct);
     const topStrength = sortedByPctDesc[0];
     const growthArea = sortedByPctDesc[sortedByPctDesc.length - 1];
+    const archetype =
+      cfg.testType === "personality" && typeof DATA.getPersonalityArchetype === "function"
+        ? DATA.getPersonalityArchetype(dimensions)
+        : null;
 
     return {
       test,
@@ -870,11 +980,13 @@
       scoreIndex,
       eqIndex: scoreIndex,
       level,
+      archetype,
       dimensions,
       topStrength,
       growthArea,
       questionDetails,
-      answers: { ...answersMap }
+      answers: { ...answersMap },
+      isShared: false
     };
   }
 
@@ -909,6 +1021,7 @@
       scoreIndex: result.scoreIndex,
       eqIndex: result.scoreIndex,
       levelId: result.level.id,
+      archetypeName: result.archetype ? result.archetype.name : undefined,
       answers: result.answers,
       dimPcts
     };
@@ -922,6 +1035,119 @@
     state.reviewFilter = "all";
     renderResultView(result);
     switchView("result");
+  }
+
+  // ==================== SHAREABLE URL ENCODING ====================
+  function encodeSharePayload(obj) {
+    const json = JSON.stringify(obj);
+    const utf8 = unescape(encodeURIComponent(json));
+    return btoa(utf8).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  function decodeSharePayload(token) {
+    const b64 = token.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = b64 + "===".slice((b64.length + 3) % 4);
+    const utf8 = atob(padded);
+    const json = decodeURIComponent(escape(utf8));
+    return JSON.parse(json);
+  }
+
+  function buildShareUrl(result) {
+    const payload = {
+      n: state.playerName || "Người bạn trên Compass",
+      t: result.test.id,
+      s: result.scoreIndex,
+      r: result.rawScore,
+      m: result.maxScore,
+      p: result.pct,
+      d: result.dimensions.map((dim) => dim.pct),
+      ts: result.timestamp,
+      sec: result.timeSpentSeconds
+    };
+    const token = encodeSharePayload(payload);
+    const base =
+      window.location && window.location.protocol && window.location.protocol.startsWith("http")
+        ? `${window.location.origin}${window.location.pathname}`
+        : window.location
+          ? window.location.href.split("?")[0]
+          : "";
+    return `${base}?share=${token}`;
+  }
+
+  function copyShareLink() {
+    const r = state.currentResult;
+    if (!r) return;
+    const url = buildShareUrl(r);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => showToast("Đã sao chép Link chia sẻ kết quả! Ai mở link cũng xem được."))
+        .catch(() => showToast("Không thể tự sao chép link. Vui lòng thử Tải thẻ PNG."));
+    } else {
+      showToast("Trình duyệt không hỗ trợ sao chép tự động.");
+    }
+  }
+
+  function tryOpenSharedFromUrl() {
+    try {
+      const search = window.location ? window.location.search : "";
+      if (!search) return false;
+      const params = new URLSearchParams(search);
+      const token = params.get("share");
+      if (!token) return false;
+
+      const payload = decodeSharePayload(token);
+      const test = DATA.TESTS.find((t) => t.id === payload.t);
+      if (!test) return false;
+
+      const cfg = getTestConfig(test);
+      const pct = Number(payload.p) || 0;
+      const scoreIndex = Number(payload.s) || cfg.minIndex;
+      const level = cfg.levels.find((lvl) => pct >= lvl.minPct) || cfg.levels[cfg.levels.length - 1];
+      const dimensions = buildDimensionsResult(cfg, null, payload.d || []);
+      const sorted = dimensions.slice().sort((a, b) => b.pct - a.pct);
+      const archetype =
+        cfg.testType === "personality" && typeof DATA.getPersonalityArchetype === "function"
+          ? DATA.getPersonalityArchetype(dimensions)
+          : null;
+
+      const sharedResult = {
+        test,
+        testType: cfg.testType,
+        cfg,
+        timestamp: payload.ts || new Date().toISOString(),
+        timeSpentSeconds: Number(payload.sec) || 0,
+        mode: "standard",
+        rawScore: Number(payload.r) || 0,
+        minScore: cfg.testType === "iq" ? 0 : test.questions.length,
+        maxScore: Number(payload.m) || test.questions.length,
+        pct,
+        scoreIndex,
+        eqIndex: scoreIndex,
+        level,
+        archetype,
+        dimensions,
+        topStrength: sorted[0],
+        growthArea: sorted[sorted.length - 1],
+        questionDetails: [],
+        answers: {},
+        isShared: true,
+        sharedBy: payload.n || "Bạn bè"
+      };
+
+      state.currentResult = sharedResult;
+      renderResultView(sharedResult);
+      switchView("result");
+      return true;
+    } catch (_err) {
+      return false;
+    }
+  }
+
+  function clearShareQueryParam() {
+    if (window.history && window.history.replaceState && window.location && window.location.search.includes("share=")) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
   }
 
   // ==================== RESULT VIEW & RADAR CHART ====================
@@ -962,8 +1188,7 @@
       };
     }
 
-    const rings = [0.2, 0.4, 0.6, 0.8, 1.0];
-    rings.forEach((r) => {
+    [0.2, 0.4, 0.6, 0.8, 1.0].forEach((r) => {
       ctx.beginPath();
       for (let i = 0; i < count; i++) {
         const pt = getPoint(i, r);
@@ -1049,13 +1274,10 @@
 
   function renderReviewList(result) {
     const isIq = result.testType === "iq";
+    const isPers = result.testType === "personality";
     const filtered = result.questionDetails.filter((item) => {
-      if (state.reviewFilter === "optimal") {
-        return isIq ? item.isCorrect : item.earned === 4;
-      }
-      if (state.reviewFilter === "improve") {
-        return isIq ? !item.isCorrect : item.earned < 4;
-      }
+      if (state.reviewFilter === "optimal") return isIq ? item.isCorrect : item.earned === 4;
+      if (state.reviewFilter === "improve") return isIq ? !item.isCorrect : item.earned < 4;
       return true;
     });
 
@@ -1083,7 +1305,7 @@
         scoreBadgeCls = item.isCorrect ? "score-4" : "score-1";
         userLabelText = item.isCorrect ? "Chính xác" : "Chưa đúng";
       } else {
-        const meta = getEqScoreLabel(item.earned);
+        const meta = getScaleScoreLabel(item.earned, result.testType);
         scoreBadgeText = `${item.earned}/4 điểm`;
         scoreBadgeCls = meta.cls;
         userLabelText = meta.label;
@@ -1098,7 +1320,7 @@
         ? item.chosenOption.feedback
         : "Hãy hoàn thành đầy đủ các câu để kết quả đánh giá sát thực tế nhất.";
 
-      const needShowOptimal = isIq ? !item.isCorrect : item.earned < 4;
+      const needShowOptimal = isIq ? !item.isCorrect : (!isPers && item.earned < 4);
       const optimalHeader = isIq ? "✅ Đáp án chính xác" : "✅ Cách ứng xử tối ưu nhất";
       const optimalRight = isIq ? "Đúng" : "4/4 điểm";
 
@@ -1115,7 +1337,11 @@
         : "";
 
       const visualBlock = q.svgDiagram ? `<div class="review-visual">${q.svgDiagram}</div>` : "";
-      const insightPrefix = isIq ? "📐 Lời giải chi tiết:" : "💡 Góc nhìn tâm lý học:";
+      const insightPrefix = isIq
+        ? "📐 Lời giải chi tiết:"
+        : isPers
+          ? "🎭 Phân tích tính cách:"
+          : "💡 Góc nhìn tâm lý học:";
 
       card.innerHTML = `
         <div class="review-card-top">
@@ -1147,7 +1373,16 @@
 
   function renderResultView(result) {
     const isIq = result.testType === "iq";
+    const isPers = result.testType === "personality";
     const cfg = result.cfg;
+
+    // Shared link banner
+    if (result.isShared) {
+      els.sharedResultBanner.classList.remove("hidden");
+      els.sharedBannerText.textContent = `${result.sharedBy} đã đạt ${cfg.shortLabel} ${result.scoreIndex} (${result.pct}%) ở bộ đề "${result.test.shortTitle || result.test.title}".`;
+    } else {
+      els.sharedResultBanner.classList.add("hidden");
+    }
 
     els.resultTestName.textContent = result.test.title;
     els.resultTimestamp.textContent = formatDateTime(result.timestamp);
@@ -1161,7 +1396,9 @@
       : `${result.rawScore} / ${result.maxScore} điểm`;
     els.resultPctScore.textContent = isIq
       ? `${result.pct}% chính xác`
-      : `${result.pct}% tối ưu`;
+      : isPers
+        ? `${result.pct}% hòa hợp`
+        : `${result.pct}% tối ưu`;
 
     const ringDeg = Math.round((result.pct / 100) * 360);
     els.eqScoreRing.style.setProperty("--ring-deg", `${ringDeg}deg`);
@@ -1174,10 +1411,27 @@
     els.resultLevelSummary.textContent = result.level.summary;
     els.resultLevelAdvice.textContent = result.level.advice;
 
+    // Archetype box for Personality
+    if (isPers && result.archetype) {
+      els.archetypeBox.classList.remove("hidden");
+      els.archetypeName.textContent = `🎭 Hình mẫu: ${result.archetype.name}`;
+      els.archetypeMbti.textContent = `MBTI tương ứng: ${result.archetype.mbtiHint}`;
+      els.archetypeSummary.textContent = result.archetype.summary;
+      els.archetypeCareers.innerHTML =
+        `<span style="font-size:0.78rem;font-weight:700;color:var(--text-muted);align-self:center;">💼 Nghề hợp:</span>` +
+        result.archetype.careers.map((c) => `<span class="career-chip">${escapeHtml(c)}</span>`).join("");
+    } else {
+      els.archetypeBox.classList.add("hidden");
+    }
+
     if (isIq) {
       els.spectrumLabelLow.textContent = "70 (Cần rèn luyện)";
       els.spectrumLabelMid.textContent = "108 (Chuẩn mực)";
       els.spectrumLabelHigh.textContent = "145 (Xuất sắc)";
+    } else if (isPers) {
+      els.spectrumLabelLow.textContent = "60 (Tự phát)";
+      els.spectrumLabelMid.textContent = "103 (Cân bằng)";
+      els.spectrumLabelHigh.textContent = "145 (Toàn diện)";
     } else {
       els.spectrumLabelLow.textContent = "55 (Cần rèn luyện)";
       els.spectrumLabelMid.textContent = "100 (Trung bình - Khá)";
@@ -1191,41 +1445,58 @@
 
     els.radarTitle.textContent = isIq
       ? "Biểu Đồ Radar 5 Năng Lực Nhận Thức IQ"
-      : "Biểu Đồ Radar 5 Trụ Cột EQ";
-    els.radarSubtitle.textContent = "So sánh năng lực thực tế của bạn với ngưỡng cân bằng chuẩn (75%)";
-    els.radarUserLabel.textContent = isIq ? "Hồ sơ IQ của bạn" : "Hồ sơ EQ của bạn";
+      : isPers
+        ? "Biểu Đồ Radar 5 Trục Tính Cách OCEAN"
+        : "Biểu Đồ Radar 5 Trụ Cột EQ";
+    els.radarSubtitle.textContent = "So sánh hồ sơ của bạn với ngưỡng cân bằng chuẩn (75%)";
+    els.radarUserLabel.textContent = isIq
+      ? "Hồ sơ IQ"
+      : isPers
+        ? "Hồ sơ Tính cách"
+        : "Hồ sơ EQ";
 
     drawRadarChart(result.dimensions);
+
+    const scoreFmt = (d) =>
+      result.isShared
+        ? `${d.pct}%`
+        : isIq
+          ? `${d.pct}% (${d.score}/${d.max} câu đúng)`
+          : `${d.pct}% (${d.score}/${d.max} điểm)`;
 
     const s = result.topStrength;
     els.strengthIcon.textContent = s.meta.icon;
     els.strengthName.textContent = s.meta.name;
-    els.strengthScore.textContent = isIq
-      ? `${s.pct}% (${s.score}/${s.max} câu đúng)`
-      : `${s.pct}% (${s.score}/${s.max} điểm)`;
+    els.strengthScore.textContent = scoreFmt(s);
     els.strengthDesc.textContent = s.evaluation;
 
     const g = result.growthArea;
     els.growthIcon.textContent = g.meta.icon;
     els.growthName.textContent = g.meta.name;
-    els.growthScore.textContent = isIq
-      ? `${g.pct}% (${g.score}/${g.max} câu đúng)`
-      : `${g.pct}% (${g.score}/${g.max} điểm)`;
+    els.growthScore.textContent = scoreFmt(g);
     els.growthDesc.textContent = g.evaluation;
 
     els.dimensionsSectionTitle.textContent = isIq
       ? "Phân Tích Chi Tiết 5 Trụ Cột Tư Duy & Bài Tập Rèn Luyện"
-      : "Phân Tích Chi Tiết Từng Trụ Cột & Bài Tập Thực Hành";
+      : isPers
+        ? "Phân Tích Chi Tiết 5 Trục Tính Cách & Gợi Ý Phát Triển"
+        : "Phân Tích Chi Tiết Từng Trụ Cột & Bài Tập Thực Hành";
     els.dimensionsSectionSubtitle.textContent = isIq
       ? "Đánh giá từng năng lực nhận thức kèm phương pháp rèn luyện não bộ"
-      : "Đánh giá sâu từng năng lực cảm xúc kèm hành động cải thiện thiết thực";
+      : isPers
+        ? "Giải mã xu hướng hành vi và cách phát huy tối đa thế mạnh tự nhiên"
+        : "Đánh giá sâu từng năng lực cảm xúc kèm hành động cải thiện thiết thực";
 
     els.dimensionsBreakdown.innerHTML = "";
     result.dimensions.forEach((dim) => {
       const card = document.createElement("div");
       card.className = "dim-item";
       const tipsHtml = dim.tips.map((t) => `<li>${escapeHtml(t)}</li>`).join("");
-      const scoreUnit = isIq ? `${dim.score}/${dim.max} đúng` : `${dim.score}/${dim.max}đ`;
+      const rightStat = result.isShared
+        ? `${dim.pct}%`
+        : isIq
+          ? `${dim.pct}% (${dim.score}/${dim.max} đúng)`
+          : `${dim.pct}% (${dim.score}/${dim.max}đ)`;
       card.innerHTML = `
         <div class="dim-item-top">
           <div class="dim-title-group">
@@ -1234,7 +1505,7 @@
           </div>
           <div class="dim-score-meta">
             <span class="dim-tier-pill ${dim.tier}">${dim.tierLabel}</span>
-            <span class="dim-pct">${dim.pct}% (${scoreUnit})</span>
+            <span class="dim-pct">${rightStat}</span>
           </div>
         </div>
         <div class="dim-bar-track">
@@ -1246,19 +1517,28 @@
       els.dimensionsBreakdown.appendChild(card);
     });
 
-    els.reviewSectionTitle.textContent = isIq
-      ? "Xem Lại Đáp Án & Lời Giải Từng Bước"
-      : "Xem Lại Đáp Án & Góc Nhìn Tâm Lý Từng Câu";
-    els.reviewSectionSubtitle.textContent = isIq
-      ? "Đối chiếu lựa chọn của bạn với đáp án chuẩn và công thức giải nhanh"
-      : "Đối chiếu lựa chọn của bạn với cách ứng xử tối ưu (4/4 điểm)";
-    els.reviewFilterOptimalBtn.textContent = isIq ? "Trả lời đúng (✓)" : "Tối ưu (4/4đ)";
-    els.reviewFilterImproveBtn.textContent = isIq ? "Trả lời sai (✕)" : "Cần lưu ý (< 4đ)";
+    if (result.isShared || result.questionDetails.length === 0) {
+      els.reviewSection.classList.add("hidden");
+    } else {
+      els.reviewSection.classList.remove("hidden");
+      els.reviewSectionTitle.textContent = isIq
+        ? "Xem Lại Đáp Án & Lời Giải Từng Bước"
+        : isPers
+          ? "Xem Lại Lựa Chọn & Phân Tích Tính Cách Từng Câu"
+          : "Xem Lại Đáp Án & Góc Nhìn Tâm Lý Từng Câu";
+      els.reviewSectionSubtitle.textContent = isIq
+        ? "Đối chiếu lựa chọn của bạn với đáp án chuẩn và công thức giải nhanh"
+        : isPers
+          ? "Chi tiết xu hướng phản hồi của bạn trong từng tình huống"
+          : "Đối chiếu lựa chọn của bạn với cách ứng xử tối ưu (4/4 điểm)";
+      els.reviewFilterOptimalBtn.textContent = isIq ? "Trả lời đúng (✓)" : isPers ? "Mức cao (4/4đ)" : "Tối ưu (4/4đ)";
+      els.reviewFilterImproveBtn.textContent = isIq ? "Trả lời sai (✕)" : isPers ? "Mức khác (< 4đ)" : "Cần lưu ý (< 4đ)";
 
-    Array.from(els.reviewFilters.querySelectorAll(".filter-pill")).forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.reviewFilter === state.reviewFilter);
-    });
-    renderReviewList(result);
+      Array.from(els.reviewFilters.querySelectorAll(".filter-pill")).forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.reviewFilter === state.reviewFilter);
+      });
+      renderReviewList(result);
+    }
   }
 
   function downloadResultCardPng() {
@@ -1272,17 +1552,20 @@
     }
 
     const W = 1080;
-    const H = 620;
+    const H = 640;
     canvas.width = W;
     canvas.height = H;
     const ctx = canvas.getContext("2d");
 
-    // Background gradient
     const grad = ctx.createLinearGradient(0, 0, W, H);
     if (r.testType === "iq") {
       grad.addColorStop(0, "#0f172a");
       grad.addColorStop(0.55, "#1e1b4b");
       grad.addColorStop(1, "#0369a1");
+    } else if (r.testType === "personality") {
+      grad.addColorStop(0, "#2e1065");
+      grad.addColorStop(0.55, "#4c1d95");
+      grad.addColorStop(1, "#be185d");
     } else {
       grad.addColorStop(0, "#1e1b4b");
       grad.addColorStop(0.55, "#312e81");
@@ -1291,7 +1574,6 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
 
-    // Subtle glass card container
     ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
     ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
     ctx.lineWidth = 2;
@@ -1301,10 +1583,10 @@
     ctx.fill();
     ctx.stroke();
 
-    // Header brand & date
+    const ownerName = r.isShared ? r.sharedBy : state.playerName || "Hồ sơ cá nhân";
     ctx.fillStyle = "#e0e7ff";
     ctx.font = "700 20px 'Be Vietnam Pro', sans-serif";
-    ctx.fillText("🧭 EQ & IQ COMPASS • CHỨNG NHẬN ĐÁNH GIÁ", 72, 86);
+    ctx.fillText(`🧭 EQ & IQ COMPASS • ${ownerName.toUpperCase()}`, 72, 86);
 
     ctx.fillStyle = "rgba(226, 232, 240, 0.8)";
     ctx.font = "500 17px 'Be Vietnam Pro', sans-serif";
@@ -1312,15 +1594,13 @@
     ctx.fillText(formatDateTime(r.timestamp), W - 72, 86);
     ctx.textAlign = "left";
 
-    // Test title
     ctx.fillStyle = "#ffffff";
     ctx.font = "800 30px 'Be Vietnam Pro', sans-serif";
     const titleShort = r.test.title.length > 52 ? r.test.title.slice(0, 50) + "…" : r.test.title;
     ctx.fillText(titleShort, 72, 138);
 
-    // Score circle on left
     const cx = 210;
-    const cy = 335;
+    const cy = 345;
     const rad = 112;
 
     ctx.beginPath();
@@ -1351,19 +1631,17 @@
     ctx.fillText(`${r.pct}% (${r.rawScore}/${r.maxScore})`, cx, cy + 62);
     ctx.textAlign = "left";
 
-    // Level & 5 dimensions bars on right
     const rx = 385;
     ctx.fillStyle = r.level.color || "#10b981";
     ctx.font = "800 20px 'Be Vietnam Pro', sans-serif";
-    ctx.fillText(r.level.badge, rx, 208);
+    ctx.fillText(r.archetype ? `🎭 ${r.archetype.name} (${r.archetype.mbtiHint})` : r.level.badge, rx, 208);
 
     ctx.fillStyle = "#ffffff";
     ctx.font = "800 24px 'Be Vietnam Pro', sans-serif";
     const lvlTitle = r.level.title.length > 44 ? r.level.title.slice(0, 42) + "…" : r.level.title;
     ctx.fillText(lvlTitle, rx, 244);
 
-    // 5 bars
-    let by = 290;
+    let by = 294;
     const barW = 585;
     r.dimensions.forEach((dim) => {
       ctx.fillStyle = "#e2e8f0";
@@ -1393,7 +1671,6 @@
       by += 38;
     });
 
-    // Footer watermark
     ctx.fillStyle = "rgba(226, 232, 240, 0.72)";
     ctx.font = "500 15px 'Be Vietnam Pro', sans-serif";
     ctx.fillText("Làm bài miễn phí tại: tanbobao2k-tech.github.io/eq-test-app", 72, H - 56);
@@ -1416,28 +1693,89 @@
       .join("\n");
 
     const unit = r.testType === "iq" ? "câu đúng" : "điểm";
-    const summary = [
-      `🧭 KẾT QUẢ TRẮC NGHIỆM ${r.cfg.shortLabel} — ${r.test.title}`,
-      `• Chỉ số ${r.cfg.shortLabel} quy đổi: ${r.scoreIndex} (Thang ${r.cfg.minIndex}–${r.cfg.maxIndex}) | Kết quả: ${r.rawScore}/${r.maxScore} ${unit} (${r.pct}%)`,
-      `• Xếp loại: ${r.level.badge} — ${r.level.title}`,
+    const lines = [
+      `🧭 KẾT QUẢ ${r.cfg.shortLabel} — ${r.test.title}`,
+      `• Chỉ số ${r.cfg.shortLabel}: ${r.scoreIndex} (Thang ${r.cfg.minIndex}–${r.cfg.maxIndex}) | Kết quả: ${r.rawScore}/${r.maxScore} ${unit} (${r.pct}%)`,
+      `• Xếp loại: ${r.level.badge} — ${r.level.title}`
+    ];
+    if (r.archetype) {
+      lines.push(`• Hình mẫu: ${r.archetype.name} (${r.archetype.mbtiHint})`);
+    }
+    lines.push(
       `• Điểm mạnh nổi bật: ${r.topStrength.meta.name} (${r.topStrength.pct}%)`,
-      `• Cần ưu tiên rèn luyện: ${r.growthArea.meta.name} (${r.growthArea.pct}%)`,
+      `• Cần chú ý: ${r.growthArea.meta.name} (${r.growthArea.pct}%)`,
       ``,
       `📊 Chi tiết 5 trụ cột:`,
       dimLines
-    ].join("\n");
+    );
 
+    const summary = lines.join("\n");
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard
         .writeText(summary)
         .then(() => showToast("Đã sao chép tóm tắt kết quả vào clipboard!"))
-        .catch(() => showToast("Không thể truy cập clipboard tự động, vui lòng thử Tải ảnh PNG hoặc In/Lưu PDF."));
+        .catch(() => showToast("Không thể truy cập clipboard tự động."));
     } else {
       showToast("Trình duyệt không hỗ trợ sao chép tự động.");
     }
   }
 
-  // ==================== HISTORY & GUIDE MODALS ====================
+  // ==================== LEADERBOARD, HISTORY & GUIDE MODALS ====================
+  function renderLeaderboardModal() {
+    if (els.playerNameInput) {
+      els.playerNameInput.value = state.playerName;
+    }
+
+    const userName = state.playerName || "Bạn (Chưa đặt tên)";
+    const userBestByType = {};
+    ["eq", "iq", "personality"].forEach((tType) => {
+      const items = state.history.filter((h) => getHistoryItemType(h) === tType);
+      if (items.length > 0) {
+        const best = items.reduce(
+          (b, c) => (getHistoryScoreIndex(c) > getHistoryScoreIndex(b) ? c : b),
+          items[0]
+        );
+        userBestByType[tType] = {
+          name: userName,
+          type: tType,
+          score: getHistoryScoreIndex(best),
+          label: `${best.testTitle} (${best.pct}%)`,
+          isUser: true
+        };
+      }
+    });
+
+    const combined = COMMUNITY_BENCHMARKS.map((b) => ({ ...b, isUser: false }));
+    Object.values(userBestByType).forEach((u) => combined.push(u));
+
+    const filtered = combined
+      .filter((entry) => state.leaderboardFilter === "all" || entry.type === state.leaderboardFilter)
+      .sort((a, b) => b.score - a.score);
+
+    els.leaderboardList.innerHTML = "";
+    filtered.forEach((entry, idx) => {
+      const rank = idx + 1;
+      const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+      const typeTag = entry.type === "iq" ? "IQ" : entry.type === "personality" ? "OCEAN" : "EQ";
+      const row = document.createElement("div");
+      row.className = `leaderboard-row ${entry.isUser ? "is-user" : ""}`;
+      row.innerHTML = `
+        <div class="lb-left">
+          <span class="lb-rank">${medal}</span>
+          <div>
+            <div class="lb-name">${escapeHtml(entry.name)} ${entry.isUser ? "(Bạn)" : ""}</div>
+            <div class="lb-sub">${escapeHtml(entry.label)}</div>
+          </div>
+        </div>
+        <div class="lb-right">
+          <span class="badge-type-pill ${entry.type}">${typeTag}</span>
+          <strong class="lb-score">${entry.score}</strong>
+        </div>
+      `;
+      els.leaderboardList.appendChild(row);
+    });
+  }
+
   function renderHistoryModal() {
     els.historyList.innerHTML = "";
     els.btnClearHistory.classList.toggle("hidden", state.history.length === 0);
@@ -1447,7 +1785,7 @@
         <div class="empty-state">
           <div class="empty-emoji">📭</div>
           <h4>Bạn chưa có bài làm nào được lưu</h4>
-          <p>Hãy chọn một bộ đề EQ hoặc IQ trên trang chủ và hoàn thành để lưu hồ sơ của bạn.</p>
+          <p>Hãy chọn một bộ đề EQ, IQ hoặc Tính cách trên trang chủ để bắt đầu.</p>
         </div>
       `;
       return;
@@ -1455,17 +1793,23 @@
 
     state.history.forEach((item) => {
       const tType = getHistoryItemType(item);
-      const levels = tType === "iq" ? DATA.IQ_LEVELS : DATA.EQ_LEVELS;
+      const levels =
+        tType === "iq"
+          ? DATA.IQ_LEVELS
+          : tType === "personality"
+            ? DATA.PERSONALITY_LEVELS
+            : DATA.EQ_LEVELS;
       const level = levels.find((l) => l.id === item.levelId) || levels[2];
       const idxScore = getHistoryScoreIndex(item);
       const unitLabel = tType === "iq" ? "câu" : "đ";
+      const badgeLabel = tType === "personality" ? "OCEAN" : tType.toUpperCase();
 
       const row = document.createElement("div");
       row.className = "history-item";
       row.innerHTML = `
         <div>
           <h4 class="history-item-title">
-            <span class="badge-type-pill ${tType}">${tType.toUpperCase()}</span>
+            <span class="badge-type-pill ${tType}">${badgeLabel}</span>
             ${escapeHtml(item.testTitle)}
           </h4>
           <div class="history-item-meta">
@@ -1474,7 +1818,7 @@
         </div>
         <div class="history-item-right">
           <span class="history-eq-badge" style="color: ${level.color}; background: ${level.color}20;">
-            ${tType.toUpperCase()} ${idxScore}
+            ${badgeLabel} ${idxScore}
           </span>
           <button type="button" class="btn btn-secondary btn-sm" data-view-history="${escapeHtml(item.id)}">
             Xem đánh giá
@@ -1502,6 +1846,7 @@
       rec.timestamp
     );
 
+    clearShareQueryParam();
     state.currentResult = reconstructed;
     state.reviewFilter = "all";
     closeModal("history-modal");
@@ -1510,37 +1855,26 @@
   }
 
   function renderGuideModal() {
-    const eqPillarsHtml = EQ_DIMENSION_ORDER.map((id) => {
-      const dim = DATA.DIMENSIONS[id];
-      return `
-        <div class="guide-pillar-card" style="border-left: 4px solid ${dim.color}">
-          <h4>${dim.icon} ${escapeHtml(dim.name)}</h4>
-          <p>${escapeHtml(dim.description)}</p>
-        </div>
-      `;
-    }).join("");
-
-    const iqPillarsHtml = IQ_DIMENSION_ORDER.map((id) => {
-      const dim = DATA.IQ_DIMENSIONS[id];
-      return `
-        <div class="guide-pillar-card" style="border-left: 4px solid ${dim.color}">
-          <h4>${dim.icon} ${escapeHtml(dim.name)}</h4>
-          <p>${escapeHtml(dim.description)}</p>
-        </div>
-      `;
-    }).join("");
+    const renderCards = (order, map) =>
+      order
+        .map((id) => {
+          const dim = map[id];
+          return `
+            <div class="guide-pillar-card" style="border-left: 4px solid ${dim.color}">
+              <h4>${dim.icon} ${escapeHtml(dim.name)}</h4>
+              <p>${escapeHtml(dim.description)}</p>
+            </div>
+          `;
+        })
+        .join("");
 
     els.guideModalContent.innerHTML = `
-      <div class="guide-section-title">🧭 5 Trụ cột Trí tuệ Cảm xúc (EQ — Daniel Goleman)</div>
-      <p style="margin-top:0">
-        Mỗi câu tình huống EQ gồm 4 mức ứng xử từ <strong>1–4 điểm</strong>, quy đổi lên phổ <strong>EQ 55–145</strong>:
-      </p>
-      ${eqPillarsHtml}
-      <div class="guide-section-title" style="margin-top:16px">🧠 5 Trụ cột Tư duy Nhận thức (IQ — Logic &amp; Raven)</div>
-      <p style="margin-top:0">
-        Các câu đố IQ tính theo độ chính xác kết hợp trọng số độ khó (1–3), quy đổi lên phổ <strong>IQ 70–145</strong>:
-      </p>
-      ${iqPillarsHtml}
+      <div class="guide-section-title">🧭 5 Trụ cột Trí tuệ Cảm xúc (EQ — Phổ 55–145)</div>
+      ${renderCards(EQ_DIMENSION_ORDER, DATA.DIMENSIONS)}
+      <div class="guide-section-title" style="margin-top:16px">🧠 5 Trụ cột Tư duy Nhận thức (IQ — Phổ 70–145)</div>
+      ${renderCards(IQ_DIMENSION_ORDER, DATA.IQ_DIMENSIONS)}
+      <div class="guide-section-title" style="margin-top:16px">🎭 5 Trục Tính Cách Quốc Tế Big Five OCEAN (Phổ 60–145)</div>
+      ${renderCards(PERSONALITY_DIMENSION_ORDER, DATA.PERSONALITY_DIMENSIONS)}
     `;
   }
 
@@ -1548,15 +1882,26 @@
   function bindEvents() {
     els.navHomeBtn.addEventListener("click", () => {
       if (state.view === "quiz") requestExitQuiz();
-      else switchView("home");
+      else {
+        clearShareQueryParam();
+        switchView("home");
+      }
     });
 
     els.btnNavTests.addEventListener("click", () => {
       if (state.view === "quiz") requestExitQuiz();
-      else switchView("home");
+      else {
+        clearShareQueryParam();
+        switchView("home");
+      }
     });
 
     els.btnToggleTheme.addEventListener("click", toggleTheme);
+
+    els.btnOpenLeaderboard.addEventListener("click", () => {
+      renderLeaderboardModal();
+      openModal("leaderboard-modal");
+    });
 
     els.btnOpenHistory.addEventListener("click", () => {
       renderHistoryModal();
@@ -1570,11 +1915,13 @@
 
     els.btnQuickStart.addEventListener("click", () => startTest("goleman-comprehensive"));
     els.btnQuickStartIq.addEventListener("click", () => startTest("iq-comprehensive"));
+    els.btnQuickStartPersonality.addEventListener("click", () => startTest("ocean-bigfive"));
     els.btnStart5Min.addEventListener("click", () => {
-      startTest(state.activeDomain === "iq" ? "iq-quick-brain" : "quick-daily");
+      if (state.activeDomain === "iq") startTest("iq-quick-brain");
+      else if (state.activeDomain === "personality") startTest("career-compass");
+      else startTest("quick-daily");
     });
 
-    // Mode switch
     [els.modeStandardBtn, els.modePracticeBtn].forEach((btn) => {
       btn.addEventListener("click", () => {
         state.mode = btn.dataset.mode;
@@ -1591,7 +1938,6 @@
       state.timerEnabled = Boolean(e.target.checked);
     });
 
-    // Domain tabs (All / EQ / IQ)
     els.domainTabs.addEventListener("click", (e) => {
       const tab = e.target.closest(".domain-tab");
       if (!tab) return;
@@ -1606,7 +1952,6 @@
       renderTestsGrid();
     });
 
-    // Category filters
     els.categoryFilters.addEventListener("click", (e) => {
       const btn = e.target.closest(".filter-pill");
       if (!btn) return;
@@ -1639,6 +1984,7 @@
     els.testsGrid.addEventListener("click", (e) => {
       const startBtn = e.target.closest("[data-start-test]");
       if (!startBtn) return;
+      clearShareQueryParam();
       startTest(startBtn.dataset.startTest);
     });
 
@@ -1698,14 +2044,45 @@
       showToast("Đã xóa toàn bộ lịch sử làm bài.");
     });
 
+    // Leaderboard events
+    els.btnSavePlayerName.addEventListener("click", () => {
+      savePlayerName(els.playerNameInput.value);
+      renderLeaderboardModal();
+      showToast("Đã lưu tên hiển thị của bạn trên Bảng xếp hạng!");
+    });
+
+    els.leaderboardFilters.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-lb-filter]");
+      if (!btn) return;
+      state.leaderboardFilter = btn.dataset.lbFilter;
+      Array.from(els.leaderboardFilters.querySelectorAll(".filter-pill")).forEach((p) => {
+        p.classList.toggle("active", p === btn);
+      });
+      renderLeaderboardModal();
+    });
+
     // Result actions
+    els.btnTrySharedTest.addEventListener("click", () => {
+      if (state.currentResult) {
+        const tid = state.currentResult.test.id;
+        clearShareQueryParam();
+        startTest(tid);
+      }
+    });
+    els.btnShareLink.addEventListener("click", copyShareLink);
     els.btnDownloadCard.addEventListener("click", downloadResultCardPng);
     els.btnCopyResult.addEventListener("click", copyResultSummary);
     els.btnPrintResult.addEventListener("click", () => window.print());
     els.btnRetakeTest.addEventListener("click", () => {
-      if (state.currentResult) startTest(state.currentResult.test.id);
+      if (state.currentResult) {
+        clearShareQueryParam();
+        startTest(state.currentResult.test.id);
+      }
     });
-    els.btnBackToHub.addEventListener("click", () => switchView("home"));
+    els.btnBackToHub.addEventListener("click", () => {
+      clearShareQueryParam();
+      switchView("home");
+    });
 
     els.reviewFilters.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-review-filter]");
@@ -1723,6 +2100,7 @@
         closeModal("submit-confirm-modal");
         closeModal("exit-confirm-modal");
         closeModal("history-modal");
+        closeModal("leaderboard-modal");
         closeModal("guide-modal");
         return;
       }
@@ -1755,10 +2133,12 @@
   // ==================== INIT ====================
   function init() {
     loadTheme();
+    loadPlayerName();
     loadHistory();
     updateUserStats();
     renderTestsGrid();
     bindEvents();
+    tryOpenSharedFromUrl();
   }
 
   init();
