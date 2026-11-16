@@ -1963,3 +1963,129 @@ input {
   }
 }
 
+
+/* ==================== IQ + DUAL PROFILE ENHANCEMENTS ==================== */
+.domain-tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.domain-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 5px;
+  border-radius: 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.domain-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 9px 15px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.domain-tab:hover {
+  color: var(--text);
+  background: var(--bg-muted);
+}
+
+.domain-tab.active {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+}
+
+.tab-count {
+  font-size: 0.75rem;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.domain-tab.active .tab-count {
+  background: rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+}
+
+.badge-type-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+}
+
+.badge-type-pill.eq {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.badge-type-pill.iq {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.question-visual,
+.review-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 18px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-muted);
+  overflow-x: auto;
+}
+
+.review-visual {
+  padding: 12px;
+  margin: 10px 0 12px;
+}
+
+.iq-svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.guide-section-title {
+  margin: 8px 0 4px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .domain-tabs {
+    width: 100%;
+  }
+
+  .domain-tab {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+
+  .search-box {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+}

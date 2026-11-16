@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EQ Compass — Trắc Nghiệm &amp; Đánh Giá Trí Tuệ Cảm Xúc</title>
+  <title>EQ &amp; IQ Compass — Trắc Nghiệm &amp; Đánh Giá Trí Tuệ Cảm Xúc &amp; IQ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -20,20 +20,20 @@
         <button type="button" class="brand-btn" id="nav-home-btn" aria-label="Về trang chủ">
           <span class="brand-logo" aria-hidden="true">🧭</span>
           <span class="brand-text">
-            <strong>EQ Compass</strong>
-            <small>Đo lường &amp; Rèn luyện Trí tuệ Cảm xúc</small>
+            <strong>EQ &amp; IQ Compass</strong>
+            <small>Đo lường Trí tuệ Cảm xúc (EQ) &amp; Tư duy Logic (IQ)</small>
           </span>
         </button>
 
         <nav class="nav-actions" aria-label="Điều hướng chính">
           <button type="button" class="nav-link active" id="btn-nav-tests">
-            <span>📚</span> Bộ đề EQ
+            <span>📚</span> Kho Bộ Đề
           </button>
           <button type="button" class="nav-link" id="btn-open-history">
             <span>🕘</span> Lịch sử <span class="nav-badge" id="history-count-badge">0</span>
           </button>
           <button type="button" class="nav-link" id="btn-open-guide">
-            <span>💡</span> 5 Trụ cột EQ
+            <span>💡</span> Cẩm nang EQ &amp; IQ
           </button>
           <button
             type="button"
@@ -54,31 +54,35 @@
       <section id="home-view" class="view active" aria-labelledby="hero-title">
         <div class="hero-card">
           <div class="hero-copy">
-            <span class="hero-pill">Mô hình Daniel Goleman • 6 Bộ Đề • 72 Tình Huống Thực Tế</span>
-            <h1 id="hero-title">Khám Phá Chỉ Số EQ &amp; Bản Đồ Cảm Xúc Của Bạn</h1>
+            <span class="hero-pill">10 Bộ Đề Chuẩn • 122 Câu Hỏi • Biểu Đồ Radar Kép EQ × IQ</span>
+            <h1 id="hero-title">Khám Phá Chỉ Số EQ &amp; IQ Toàn Diện Của Bạn</h1>
             <p>
-              Trắc nghiệm dựa trên các tình huống ứng xử đời thực trong công sở, tình cảm và áp lực sống.
-              Chấm điểm đa chiều trên <strong>5 trụ cột EQ</strong>, vẽ biểu đồ Radar và đề xuất lộ trình cải thiện cá nhân hóa.
+              Đo lường song song <strong>Trí tuệ Cảm xúc (EQ)</strong> qua tình huống đời thực và
+              <strong>Trí tuệ Logic (IQ)</strong> qua ma trận hình ảnh SVG, quy luật số học &amp; suy luận.
+              Tự động phân tích 5 trụ cột và xuất thẻ chứng nhận PNG chia sẻ.
             </p>
             <div class="hero-cta-row">
               <button type="button" class="btn btn-primary btn-lg" id="btn-quick-start">
-                🚀 Làm ngay Đề Chuẩn Toàn Diện (15 câu)
+                🧭 Đề Chuẩn EQ (15 câu)
+              </button>
+              <button type="button" class="btn btn-secondary btn-lg" id="btn-quick-start-iq">
+                🧠 Đề Chuẩn IQ (15 câu)
               </button>
               <button type="button" class="btn btn-secondary btn-lg" id="btn-start-5min">
-                ⚡ Test nhanh 5 phút (9 câu)
+                ⚡ Test nhanh 5 phút
               </button>
             </div>
           </div>
           <div class="hero-pillars-preview" aria-hidden="true">
-            <div class="mini-pillar"><span>🪞</span> Tự nhận thức</div>
-            <div class="mini-pillar"><span>⚖️</span> Tự kiểm soát</div>
-            <div class="mini-pillar"><span>🔥</span> Động lực nội tại</div>
-            <div class="mini-pillar"><span>🤝</span> Thấu cảm</div>
-            <div class="mini-pillar"><span>🌐</span> Kỹ năng xã hội</div>
+            <div class="mini-pillar"><span>🧭</span> 6 Bộ Đề EQ (72 tình huống)</div>
+            <div class="mini-pillar"><span>🧠</span> 4 Bộ Đề IQ (50 câu đố + SVG)</div>
+            <div class="mini-pillar"><span>📊</span> Biểu đồ Radar 5 trục chuyên sâu</div>
+            <div class="mini-pillar"><span>🎭</span> Hồ sơ Kép EQ × IQ cá nhân</div>
+            <div class="mini-pillar"><span>🖼️</span> Tải Thẻ Kết Quả PNG chia sẻ</div>
           </div>
         </div>
 
-        <!-- User Summary Stats -->
+        <!-- Dual Intelligence Profile Stats -->
         <div class="stats-grid" id="user-stats-grid">
           <div class="stat-card">
             <div class="stat-icon">📝</div>
@@ -88,24 +92,24 @@
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">📈</div>
+            <div class="stat-icon">🧭</div>
             <div class="stat-body">
               <span class="stat-label">EQ Trung bình (55–145)</span>
               <strong class="stat-value" id="stat-avg-eq">--</strong>
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🏅</div>
+            <div class="stat-icon">🧠</div>
             <div class="stat-body">
-              <span class="stat-label">Xếp loại gần nhất</span>
-              <strong class="stat-value stat-value-sm" id="stat-latest-rank">Chưa có dữ liệu</strong>
+              <span class="stat-label">IQ Trung bình (70–145)</span>
+              <strong class="stat-value" id="stat-avg-iq">--</strong>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">✨</div>
             <div class="stat-body">
-              <span class="stat-label">Trụ cột nổi bật nhất</span>
-              <strong class="stat-value stat-value-sm" id="stat-top-dim">Chưa có dữ liệu</strong>
+              <span class="stat-label">Hồ sơ Kép EQ × IQ</span>
+              <strong class="stat-value stat-value-sm" id="stat-dual-profile">Làm đủ 1 EQ &amp; 1 IQ để mở khóa</strong>
             </div>
           </div>
         </div>
@@ -136,16 +140,18 @@
           </div>
         </div>
 
-        <!-- Category Filters & Search -->
-        <div class="filter-toolbar">
-          <div class="filter-pills" id="category-filters" role="tablist" aria-label="Lọc theo chủ đề">
-            <button type="button" class="filter-pill active" data-category="all">Tất cả (6)</button>
-            <button type="button" class="filter-pill" data-category="comprehensive">Toàn diện</button>
-            <button type="button" class="filter-pill" data-category="workplace">Công sở</button>
-            <button type="button" class="filter-pill" data-category="relationship">Tình cảm</button>
-            <button type="button" class="filter-pill" data-category="resilience">Kiểm soát cảm xúc</button>
-            <button type="button" class="filter-pill" data-category="social">Giao tiếp &amp; Thấu cảm</button>
-            <button type="button" class="filter-pill" data-category="quick">Nhanh 5 phút</button>
+        <!-- Domain Switch Tabs (All / EQ / IQ) -->
+        <div class="domain-tabs-row">
+          <div class="domain-tabs" id="domain-tabs" role="tablist" aria-label="Chọn nhóm đề">
+            <button type="button" class="domain-tab active" data-domain="all">
+              📚 Tất cả bộ đề <span class="tab-count">10</span>
+            </button>
+            <button type="button" class="domain-tab" data-domain="eq">
+              🧭 Đề Test EQ <span class="tab-count">6</span>
+            </button>
+            <button type="button" class="domain-tab" data-domain="iq">
+              🧠 Đề Test IQ <span class="tab-count">4</span>
+            </button>
           </div>
 
           <div class="search-box">
@@ -153,9 +159,26 @@
             <input
               type="search"
               id="test-search-input"
-              placeholder="Tìm bộ đề (vd: công sở, cơn giận, tình yêu...)"
+              placeholder="Tìm bộ đề (vd: IQ, ma trận, công sở, cơn giận...)"
               aria-label="Tìm kiếm bộ đề"
             />
+          </div>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="filter-toolbar">
+          <div class="filter-pills" id="category-filters" role="tablist" aria-label="Lọc theo chủ đề">
+            <button type="button" class="filter-pill active" data-category="all">Tất cả chủ đề</button>
+            <button type="button" class="filter-pill" data-category="comprehensive">EQ Toàn diện</button>
+            <button type="button" class="filter-pill" data-category="workplace">EQ Công sở</button>
+            <button type="button" class="filter-pill" data-category="relationship">EQ Tình cảm</button>
+            <button type="button" class="filter-pill" data-category="resilience">EQ Áp lực</button>
+            <button type="button" class="filter-pill" data-category="social">EQ Giao tiếp</button>
+            <button type="button" class="filter-pill" data-category="quick">EQ 5 phút</button>
+            <button type="button" class="filter-pill" data-category="iq-comprehensive">IQ Toàn diện</button>
+            <button type="button" class="filter-pill" data-category="iq-logic">IQ Số &amp; Logic</button>
+            <button type="button" class="filter-pill" data-category="iq-spatial">IQ Không gian</button>
+            <button type="button" class="filter-pill" data-category="iq-quick">IQ 5 phút</button>
           </div>
         </div>
 
@@ -164,7 +187,7 @@
         <div class="empty-state hidden" id="tests-empty-state">
           <div class="empty-emoji">🔍</div>
           <h3>Không tìm thấy bộ đề phù hợp</h3>
-          <p>Thử xóa từ khóa tìm kiếm hoặc chọn mục "Tất cả" để xem đầy đủ 6 bộ đề EQ.</p>
+          <p>Thử xóa từ khóa tìm kiếm hoặc chọn mục "Tất cả" để xem đầy đủ 10 bộ đề EQ &amp; IQ.</p>
           <button type="button" class="btn btn-secondary" id="btn-reset-filters">Hiển thị tất cả đề</button>
         </div>
       </section>
@@ -216,6 +239,8 @@
 
               <h3 class="question-text" id="question-text">Nội dung câu hỏi tình huống...</h3>
 
+              <div class="question-visual hidden" id="question-visual"></div>
+
               <div class="options-list" id="options-list" role="radiogroup" aria-label="Các phương án trả lời"></div>
 
               <!-- Practice Mode Instant Feedback -->
@@ -226,7 +251,7 @@
                 </div>
                 <p class="feedback-personal" id="feedback-personal"></p>
                 <div class="feedback-insight">
-                  <strong>💡 Góc nhìn tâm lý học:</strong>
+                  <strong id="feedback-insight-label">💡 Góc nhìn tâm lý học:</strong>
                   <p id="feedback-explanation"></p>
                 </div>
               </div>
@@ -276,7 +301,7 @@
       </section>
 
       <!-- ==================== VIEW 3: RESULTS & EVALUATION ==================== -->
-      <section id="result-view" class="view hidden" aria-label="Kết quả và đánh giá EQ">
+      <section id="result-view" class="view hidden" aria-label="Kết quả và đánh giá">
         <div class="result-toolbar no-print">
           <div class="result-meta">
             <span class="result-test-name" id="result-test-name">Tên bộ đề</span>
@@ -286,6 +311,9 @@
             <span id="result-time-spent">Thời gian: 03:20</span>
           </div>
           <div class="result-actions">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-download-card">
+              🖼️ Tải thẻ ảnh PNG
+            </button>
             <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-result">
               📋 Sao chép tóm tắt
             </button>
@@ -305,9 +333,9 @@
         <div class="result-hero card" id="result-hero-card">
           <div class="result-score-col">
             <div class="eq-score-ring" id="eq-score-ring">
-              <span class="eq-ring-label">CHỈ SỐ EQ</span>
+              <span class="eq-ring-label" id="eq-ring-label">CHỈ SỐ EQ</span>
               <strong class="eq-ring-value" id="result-eq-index">120</strong>
-              <span class="eq-ring-sub">Thang 55–145</span>
+              <span class="eq-ring-sub" id="eq-ring-sub">Thang 55–145</span>
             </div>
             <div class="raw-score-pills">
               <span class="raw-pill" id="result-raw-score">48 / 60 điểm</span>
@@ -327,9 +355,9 @@
             <!-- Spectrum Scale Bar -->
             <div class="spectrum-wrap">
               <div class="spectrum-labels">
-                <span>55 (Cần rèn luyện)</span>
-                <span>100 (Trung bình - Khá)</span>
-                <span>145 (Xuất sắc)</span>
+                <span id="spectrum-label-low">55 (Cần rèn luyện)</span>
+                <span id="spectrum-label-mid">100 (Trung bình - Khá)</span>
+                <span id="spectrum-label-high">145 (Xuất sắc)</span>
               </div>
               <div class="spectrum-bar">
                 <div class="spectrum-marker" id="spectrum-marker" style="left: 50%">
@@ -345,15 +373,15 @@
           <div class="card radar-card">
             <div class="card-header-row">
               <div>
-                <h3>Biểu Đồ Radar 5 Trụ Cột EQ</h3>
-                <p class="card-subtitle">So sánh năng lực thực tế của bạn với ngưỡng cân bằng chuẩn (75%)</p>
+                <h3 id="radar-title">Biểu Đồ Radar 5 Trụ Cột EQ</h3>
+                <p class="card-subtitle" id="radar-subtitle">So sánh năng lực thực tế của bạn với ngưỡng cân bằng chuẩn (75%)</p>
               </div>
             </div>
             <div class="radar-canvas-wrap">
               <canvas id="eq-radar-canvas" width="440" height="360"></canvas>
             </div>
             <div class="radar-legend">
-              <span><i class="radar-swatch user"></i> Hồ sơ EQ của bạn</span>
+              <span><i class="radar-swatch user"></i> <span id="radar-user-label">Hồ sơ của bạn</span></span>
               <span><i class="radar-swatch benchmark"></i> Ngưỡng cân bằng (75%)</span>
             </div>
           </div>
@@ -389,8 +417,8 @@
         <section class="card section-block">
           <div class="section-head">
             <div>
-              <h3>Phân Tích Chi Tiết Từng Trụ Cột &amp; Bài Tập Thực Hành</h3>
-              <p class="card-subtitle">Đánh giá sâu từng năng lực cảm xúc kèm hành động cải thiện thiết thực</p>
+              <h3 id="dimensions-section-title">Phân Tích Chi Tiết Từng Trụ Cột &amp; Bài Tập Thực Hành</h3>
+              <p class="card-subtitle" id="dimensions-section-subtitle">Đánh giá sâu từng năng lực kèm hành động cải thiện thiết thực</p>
             </div>
           </div>
           <div class="dimensions-list" id="dimensions-breakdown"></div>
@@ -400,13 +428,13 @@
         <section class="card section-block">
           <div class="section-head review-head">
             <div>
-              <h3>Xem Lại Đáp Án &amp; Góc Nhìn Tâm Lý Từng Câu</h3>
-              <p class="card-subtitle">Đối chiếu lựa chọn của bạn với cách ứng xử tối ưu (4/4 điểm)</p>
+              <h3 id="review-section-title">Xem Lại Đáp Án &amp; Giải Thích Chi Tiết Từng Câu</h3>
+              <p class="card-subtitle" id="review-section-subtitle">Đối chiếu lựa chọn của bạn với đáp án chuẩn và lời giải chi tiết</p>
             </div>
             <div class="review-filters no-print" id="review-filters">
               <button type="button" class="filter-pill active" data-review-filter="all">Tất cả</button>
-              <button type="button" class="filter-pill" data-review-filter="optimal">Tối ưu (4/4đ)</button>
-              <button type="button" class="filter-pill" data-review-filter="improve">Cần lưu ý (&lt; 4đ)</button>
+              <button type="button" class="filter-pill" data-review-filter="optimal" id="review-filter-optimal-btn">Tối ưu (4/4đ)</button>
+              <button type="button" class="filter-pill" data-review-filter="improve" id="review-filter-improve-btn">Cần lưu ý (&lt; 4đ)</button>
             </div>
           </div>
           <div class="review-list" id="review-list"></div>
@@ -417,7 +445,7 @@
     <!-- Footer -->
     <footer class="app-footer no-print">
       <div class="container footer-inner">
-        <span>EQ Compass — Công cụ tự đánh giá &amp; rèn luyện Trí tuệ Cảm xúc (dựa trên mô hình 5 trụ cột của Daniel Goleman).</span>
+        <span>EQ &amp; IQ Compass — Nền tảng tự đánh giá Trí tuệ Cảm xúc (EQ) &amp; Tư duy Logic (IQ).</span>
         <span>Kết quả được lưu cục bộ trên trình duyệt của bạn.</span>
       </div>
     </footer>
@@ -431,7 +459,7 @@
         <button type="button" class="modal-close" data-close-modal="submit-confirm-modal" aria-label="Đóng">✕</button>
       </div>
       <div class="modal-body">
-        <p id="confirm-missing-text">Còn một số câu chưa chọn đáp án. Bạn có thể bấm vào số câu bên dưới để trả lời bổ sung hoặc nộp bài luôn (các câu bỏ trống sẽ tính 1 điểm tối thiểu).</p>
+        <p id="confirm-missing-text">Còn một số câu chưa chọn đáp án. Bạn có thể bấm vào số câu bên dưới để trả lời bổ sung hoặc nộp bài luôn.</p>
         <div class="missing-chips" id="missing-question-chips"></div>
       </div>
       <div class="modal-footer">
@@ -462,7 +490,7 @@
   <div class="modal-backdrop hidden" id="history-modal" role="dialog" aria-modal="true" aria-labelledby="history-modal-title">
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
-        <h3 id="history-modal-title">🕘 Lịch Sử Các Bài Đánh Giá EQ</h3>
+        <h3 id="history-modal-title">🕘 Lịch Sử Các Bài Đánh Giá EQ &amp; IQ</h3>
         <button type="button" class="modal-close" data-close-modal="history-modal" aria-label="Đóng">✕</button>
       </div>
       <div class="modal-body">
@@ -477,11 +505,11 @@
     </div>
   </div>
 
-  <!-- ==================== MODAL: EQ GUIDE ==================== -->
+  <!-- ==================== MODAL: EQ & IQ GUIDE ==================== -->
   <div class="modal-backdrop hidden" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-modal-title">
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
-        <h3 id="guide-modal-title">💡 Cẩm Nang 5 Trụ Cột Trí Tuệ Cảm Xúc (EQ)</h3>
+        <h3 id="guide-modal-title">💡 Cẩm Nang 5 Trụ Cột EQ &amp; 5 Trụ Cột IQ</h3>
         <button type="button" class="modal-close" data-close-modal="guide-modal" aria-label="Đóng">✕</button>
       </div>
       <div class="modal-body guide-body" id="guide-modal-content"></div>
@@ -495,6 +523,7 @@
   <div class="toast hidden" id="app-toast" role="status" aria-live="polite"></div>
 
   <script src="js/data.js"></script>
+  <script src="js/iq-data.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
