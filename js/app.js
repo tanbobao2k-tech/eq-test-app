@@ -429,6 +429,8 @@
     if (item.testType === "iq" || item.testType === "personality" || item.testType === "eq") {
       return item.testType;
     }
+    const found = DATA.TESTS.find((t) => t.id === item.testId);
+    if (found) return getTestType(found);
     const id = String(item.testId || "");
     if (id.startsWith("iq-")) return "iq";
     if (id.startsWith("ocean-") || id.startsWith("mbti-") || id.startsWith("career-")) return "personality";
@@ -515,9 +517,26 @@
     });
   }
 
+  function syncDomainCounts() {
+    const counts = { all: DATA.TESTS.length, eq: 0, iq: 0, personality: 0 };
+    DATA.TESTS.forEach((t) => {
+      const k = getTestType(t);
+      if (counts[k] !== undefined) counts[k] += 1;
+    });
+    const elAll = document.getElementById("tab-count-all");
+    const elEq = document.getElementById("tab-count-eq");
+    const elIq = document.getElementById("tab-count-iq");
+    const elPers = document.getElementById("tab-count-personality");
+    if (elAll) elAll.textContent = String(counts.all);
+    if (elEq) elEq.textContent = String(counts.eq);
+    if (elIq) elIq.textContent = String(counts.iq);
+    if (elPers) elPers.textContent = String(counts.personality);
+  }
+
   function renderTestsGrid() {
     syncCategoryPillsVisibility();
     const query = state.searchQuery.trim().toLowerCase();
+    const typeOrder = { eq: 0, iq: 1, personality: 2 };
     const filtered = DATA.TESTS.filter((test) => {
       const tType = getTestType(test);
       if (state.activeDomain !== "all" && tType !== state.activeDomain) return false;
@@ -525,7 +544,7 @@
       if (!query) return true;
       const haystack = `${tType} ${test.title} ${test.description} ${test.categoryLabel} ${test.tags.join(" ")}`.toLowerCase();
       return haystack.includes(query);
-    });
+    }).sort((a, b) => (typeOrder[getTestType(a)] || 0) - (typeOrder[getTestType(b)] || 0));
 
     els.testsGrid.innerHTML = "";
     els.testsEmptyState.classList.toggle("hidden", filtered.length > 0);
@@ -2135,6 +2154,7 @@
     loadTheme();
     loadPlayerName();
     loadHistory();
+    syncDomainCounts();
     updateUserStats();
     renderTestsGrid();
     bindEvents();

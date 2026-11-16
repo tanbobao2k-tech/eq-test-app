@@ -57,7 +57,7 @@
       <section id="home-view" class="view active" aria-labelledby="hero-title">
         <div class="hero-card">
           <div class="hero-copy">
-            <span class="hero-pill">13 Bộ Đề Chuẩn • 162 Câu Hỏi • Tam Giác EQ × IQ × Tính Cách</span>
+            <span class="hero-pill">24 Bộ Đề Chuẩn • 276 Câu Hỏi • Tam Giác EQ × IQ × Tính Cách</span>
             <h1 id="hero-title">Khám Phá Bản Đồ EQ, IQ &amp; Tính Cách Toàn Diện</h1>
             <p>
               Trắc nghiệm chuyên sâu 3 trụ cột con người: <strong>Trí tuệ Cảm xúc (EQ)</strong>,
@@ -80,9 +80,9 @@
             </div>
           </div>
           <div class="hero-pillars-preview" aria-hidden="true">
-            <div class="mini-pillar"><span>🧭</span> 6 Bộ Đề EQ (72 tình huống)</div>
-            <div class="mini-pillar"><span>🧠</span> 4 Bộ Đề IQ (50 câu + hình SVG)</div>
-            <div class="mini-pillar"><span>🎭</span> 3 Bộ Đề Tính cách &amp; Hướng nghiệp</div>
+            <div class="mini-pillar"><span>🧭</span> 10 Bộ Đề EQ (116 tình huống)</div>
+            <div class="mini-pillar"><span>🧠</span> 8 Bộ Đề IQ (90 câu + hình SVG)</div>
+            <div class="mini-pillar"><span>🎭</span> 6 Bộ Đề Tính cách &amp; Hướng nghiệp</div>
             <div class="mini-pillar"><span>🏆</span> Bảng xếp hạng &amp; Link chia sẻ URL</div>
             <div class="mini-pillar"><span>🖼️</span> Tải Thẻ Chứng Nhận PNG</div>
           </div>
@@ -157,16 +157,16 @@
         <div class="domain-tabs-row">
           <div class="domain-tabs" id="domain-tabs" role="tablist" aria-label="Chọn nhóm đề">
             <button type="button" class="domain-tab active" data-domain="all">
-              📚 Tất cả <span class="tab-count">13</span>
+              📚 Tất cả <span class="tab-count" id="tab-count-all">24</span>
             </button>
             <button type="button" class="domain-tab" data-domain="eq">
-              🧭 EQ <span class="tab-count">6</span>
+              🧭 EQ <span class="tab-count" id="tab-count-eq">10</span>
             </button>
             <button type="button" class="domain-tab" data-domain="iq">
-              🧠 IQ <span class="tab-count">4</span>
+              🧠 IQ <span class="tab-count" id="tab-count-iq">8</span>
             </button>
             <button type="button" class="domain-tab" data-domain="personality">
-              🎭 Tính cách &amp; Nghề <span class="tab-count">3</span>
+              🎭 Tính cách &amp; Nghề <span class="tab-count" id="tab-count-personality">6</span>
             </button>
           </div>
 
@@ -206,7 +206,7 @@
         <div class="empty-state hidden" id="tests-empty-state">
           <div class="empty-emoji">🔍</div>
           <h3>Không tìm thấy bộ đề phù hợp</h3>
-          <p>Thử xóa từ khóa tìm kiếm hoặc chọn mục "Tất cả" để xem đầy đủ 13 bộ đề.</p>
+          <p>Thử xóa từ khóa tìm kiếm hoặc chọn mục "Tất cả" để xem đầy đủ 24 bộ đề.</p>
           <button type="button" class="btn btn-secondary" id="btn-reset-filters">Hiển thị tất cả đề</button>
         </div>
       </section>
@@ -599,6 +599,7 @@
   <script src="js/data.js"></script>
   <script src="js/iq-data.js"></script>
   <script src="js/personality-data.js"></script>
+  <script src="js/extra-tests-data.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
