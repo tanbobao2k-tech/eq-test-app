@@ -27,10 +27,16 @@
 
         <nav class="nav-actions" aria-label="Điều hướng chính">
           <button type="button" class="nav-link active" id="btn-nav-tests">
-            <span>📚</span> Kho Bộ Đề
+            <span>📚</span> Kho Đề
+          </button>
+          <button type="button" class="nav-link" id="btn-open-braingym">
+            <span>🎮</span> Brain Gym
+          </button>
+          <button type="button" class="nav-link" id="btn-open-progress">
+            <span>📈</span> Tiến độ &amp; Lộ trình
           </button>
           <button type="button" class="nav-link" id="btn-open-leaderboard">
-            <span>🏆</span> Bảng xếp hạng
+            <span>🏆</span> Xếp hạng
           </button>
           <button type="button" class="nav-link" id="btn-open-history">
             <span>🕘</span> Lịch sử <span class="nav-badge" id="history-count-badge">0</span>
@@ -38,6 +44,9 @@
           <button type="button" class="nav-link" id="btn-open-guide">
             <span>💡</span> Cẩm nang
           </button>
+          <span class="streak-pill" id="streak-pill" title="Chuỗi ngày rèn luyện liên tiếp">
+            🔥 <strong id="streak-count">0</strong> ngày
+          </span>
           <button
             type="button"
             class="icon-btn"
@@ -72,7 +81,10 @@
                 🧠 Đề Chuẩn IQ (15 câu)
               </button>
               <button type="button" class="btn btn-secondary btn-lg" id="btn-quick-start-personality">
-                🎭 Test Tính cách OCEAN (15 câu)
+                🎭 Test Tính cách OCEAN
+              </button>
+              <button type="button" class="btn btn-secondary btn-lg" id="btn-random-mix">
+                🎲 Đề Ngẫu Nhiên (10 câu)
               </button>
               <button type="button" class="btn btn-secondary btn-lg" id="btn-start-5min">
                 ⚡ Test nhanh 5 phút
@@ -213,6 +225,11 @@
 
       <!-- ==================== VIEW 2: QUIZ RUNNER ==================== -->
       <section id="quiz-view" class="view hidden" aria-label="Màn hình làm bài trắc nghiệm">
+        <div class="challenge-banner card hidden" id="active-challenge-banner">
+          <span>⚔️ <strong id="active-challenge-title">Thách đấu 1v1</strong></span>
+          <span id="active-challenge-target">Mục tiêu cần vượt: --</span>
+        </div>
+
         <div class="quiz-topbar card">
           <div class="quiz-topbar-left">
             <button type="button" class="btn btn-ghost btn-sm" id="btn-exit-quiz">
@@ -340,7 +357,10 @@
             <span id="result-time-spent">Thời gian: 03:20</span>
           </div>
           <div class="result-actions">
-            <button type="button" class="btn btn-primary btn-sm" id="btn-share-link">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-challenge-friend">
+              ⚔️ Thách đấu bạn bè 1v1
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-share-link">
               🔗 Copy Link Chia Sẻ
             </button>
             <button type="button" class="btn btn-secondary btn-sm" id="btn-download-card">
@@ -359,6 +379,28 @@
               📚 Chọn đề khác
             </button>
           </div>
+        </div>
+
+        <!-- 1v1 Challenge Versus Card -->
+        <div class="card versus-card hidden" id="versus-card">
+          <div class="versus-header">
+            <span class="versus-badge" id="versus-outcome-badge">🏆 BẠN ĐÃ CHIẾN THẮNG!</span>
+            <h3 id="versus-title">Kết Quả Đối Đầu 1v1</h3>
+          </div>
+          <div class="versus-scoreboard">
+            <div class="versus-player you">
+              <span class="vp-label">Bạn</span>
+              <strong class="vp-score" id="versus-your-score">130</strong>
+              <span class="vp-meta" id="versus-your-meta">90% • 02:15</span>
+            </div>
+            <div class="versus-vs">VS</div>
+            <div class="versus-player opponent">
+              <span class="vp-label" id="versus-opp-name">Đối thủ</span>
+              <strong class="vp-score" id="versus-opp-score">118</strong>
+              <span class="vp-meta" id="versus-opp-meta">75% • 03:10</span>
+            </div>
+          </div>
+          <div class="versus-dims" id="versus-dims-list"></div>
         </div>
 
         <!-- Hero Result Summary -->
@@ -593,6 +635,129 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL: PROGRESS, BADGES & 7-DAY PLAN ==================== -->
+  <div class="modal-backdrop hidden" id="progress-modal" role="dialog" aria-modal="true" aria-labelledby="progress-modal-title">
+    <div class="modal-card modal-card-lg">
+      <div class="modal-header">
+        <h3 id="progress-modal-title">📈 Tiến Bộ, Huy Hiệu &amp; Lộ Trình 7 Ngày</h3>
+        <button type="button" class="modal-close" data-close-modal="progress-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="modal-body progress-modal-body">
+        <div class="streak-banner">
+          <div>
+            <span class="streak-banner-label">Chuỗi rèn luyện hiện tại</span>
+            <strong id="progress-streak-now">🔥 0 ngày</strong>
+          </div>
+          <div>
+            <span class="streak-banner-label">Kỷ lục chuỗi dài nhất</span>
+            <strong id="progress-streak-best">🏆 0 ngày</strong>
+          </div>
+          <div>
+            <span class="streak-banner-label">Tổng lượt hoạt động</span>
+            <strong id="progress-total-acts">0 lượt</strong>
+          </div>
+        </div>
+
+        <div class="sub-section">
+          <h4>Biểu đồ tiến bộ điểm số (12 bài gần nhất)</h4>
+          <div class="progress-canvas-wrap">
+            <canvas id="progress-line-canvas" width="660" height="230"></canvas>
+          </div>
+        </div>
+
+        <div class="sub-section">
+          <h4>Bộ sưu tập 8 Huy hiệu thành tựu (<span id="badges-unlocked-count">0</span>/8)</h4>
+          <div class="badges-grid" id="badges-grid"></div>
+        </div>
+
+        <div class="sub-section">
+          <div class="plan-header-row">
+            <div>
+              <h4>Lộ trình thực hành 7 ngày cá nhân hóa</h4>
+              <small id="plan-recommendation-note">Chọn trụ cột bạn muốn ưu tiên cải thiện:</small>
+            </div>
+            <div class="plan-controls">
+              <select id="plan-dim-select" aria-label="Chọn trụ cột rèn luyện 7 ngày"></select>
+              <span class="plan-badge" id="plan-progress-badge">0/7 ngày</span>
+            </div>
+          </div>
+          <div class="plan-7days-list" id="plan-7days-list"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-close-modal="progress-modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: BRAIN GYM MINI-GAMES ==================== -->
+  <div class="modal-backdrop hidden" id="braingym-modal" role="dialog" aria-modal="true" aria-labelledby="braingym-modal-title">
+    <div class="modal-card modal-card-lg">
+      <div class="modal-header">
+        <h3 id="braingym-modal-title">🎮 Brain Gym — Khu Vực Luyện Não &amp; Phản Xạ</h3>
+        <button type="button" class="modal-close" data-close-modal="braingym-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="gym-tabs" id="gym-tabs">
+          <button type="button" class="domain-tab active" data-gym-tab="memory">
+            🟩 Ma Trận Trí Nhớ <span class="tab-count" id="gym-best-memory">0</span>
+          </button>
+          <button type="button" class="domain-tab" data-gym-tab="stroop">
+            🎨 Bẫy Màu Stroop <span class="tab-count" id="gym-best-stroop">0</span>
+          </button>
+          <button type="button" class="domain-tab" data-gym-tab="math">
+            ⚡ Tính Nhẩm 30s <span class="tab-count" id="gym-best-math">0</span>
+          </button>
+        </div>
+
+        <!-- Game 1: Memory Matrix -->
+        <div class="gym-panel" id="gym-panel-memory">
+          <div class="gym-hud">
+            <span>Cấp độ: <strong id="mem-level">1</strong></span>
+            <span>Điểm: <strong id="mem-score">0</strong></span>
+            <span>Mạng: <strong id="mem-lives">❤️❤️❤️</strong></span>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-mem-start">▶ Bắt đầu / Chơi lại</button>
+          </div>
+          <p class="gym-status" id="mem-status">Bấm "Bắt đầu" để ghi nhớ các ô xanh phát sáng rồi bấm lại chính xác!</p>
+          <div class="mem-grid" id="mem-grid"></div>
+        </div>
+
+        <!-- Game 2: Stroop Test -->
+        <div class="gym-panel hidden" id="gym-panel-stroop">
+          <div class="gym-hud">
+            <span>Thời gian: <strong id="stroop-timer">30s</strong></span>
+            <span>Điểm: <strong id="stroop-score">0</strong></span>
+            <span>Combo: <strong id="stroop-combo">x1</strong></span>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-stroop-start">▶ Bắt đầu 30s</button>
+          </div>
+          <p class="gym-status" id="stroop-status">Chọn nút tương ứng với MÀU MỰC của chữ, không phải nghĩa của chữ!</p>
+          <div class="stroop-stage">
+            <div class="stroop-word" id="stroop-word">ĐỎ</div>
+          </div>
+          <div class="stroop-options" id="stroop-options"></div>
+        </div>
+
+        <!-- Game 3: Speed Math -->
+        <div class="gym-panel hidden" id="gym-panel-math">
+          <div class="gym-hud">
+            <span>Thời gian: <strong id="math-timer">30s</strong></span>
+            <span>Điểm: <strong id="math-score">0</strong></span>
+            <span>Combo: <strong id="math-combo">x1</strong></span>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-math-start">▶ Bắt đầu 30s</button>
+          </div>
+          <p class="gym-status" id="math-status">Giải nhanh càng nhiều phép tính càng tốt trong 30 giây!</p>
+          <div class="stroop-stage">
+            <div class="math-question" id="math-question">25 + 17 = ?</div>
+          </div>
+          <div class="math-options" id="math-options"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-close-modal="braingym-modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div class="toast hidden" id="app-toast" role="status" aria-live="polite"></div>
 
@@ -600,6 +765,7 @@
   <script src="js/iq-data.js"></script>
   <script src="js/personality-data.js"></script>
   <script src="js/extra-tests-data.js"></script>
+  <script src="js/features.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

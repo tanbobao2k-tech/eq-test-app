@@ -2,6 +2,7 @@
   "use strict";
 
   const DATA = window.EQ_DATA;
+  const FEAT = window.EQ_FEATURES;
   if (!DATA) {
     throw new Error("EQ_DATA is not loaded.");
   }
@@ -69,10 +70,13 @@
     elapsedSeconds: 0,
     remainingSeconds: 0,
     timerId: null,
+    activeChallenge: null,
+    mixCursor: 0,
 
     // Active result
     currentResult: null,
     reviewFilter: "all",
+    selectedPlanDim: "",
     toastTimer: null
   };
 
@@ -84,9 +88,12 @@
 
     navHomeBtn: document.getElementById("nav-home-btn"),
     btnNavTests: document.getElementById("btn-nav-tests"),
+    btnOpenBraingym: document.getElementById("btn-open-braingym"),
+    btnOpenProgress: document.getElementById("btn-open-progress"),
     btnOpenLeaderboard: document.getElementById("btn-open-leaderboard"),
     btnOpenHistory: document.getElementById("btn-open-history"),
     btnOpenGuide: document.getElementById("btn-open-guide"),
+    streakCount: document.getElementById("streak-count"),
     btnToggleTheme: document.getElementById("btn-toggle-theme"),
     themeIcon: document.getElementById("theme-icon"),
     historyCountBadge: document.getElementById("history-count-badge"),
@@ -94,6 +101,7 @@
     btnQuickStart: document.getElementById("btn-quick-start"),
     btnQuickStartIq: document.getElementById("btn-quick-start-iq"),
     btnQuickStartPersonality: document.getElementById("btn-quick-start-personality"),
+    btnRandomMix: document.getElementById("btn-random-mix"),
     btnStart5Min: document.getElementById("btn-start-5min"),
     statCompletedCount: document.getElementById("stat-completed-count"),
     statAvgEq: document.getElementById("stat-avg-eq"),
@@ -114,6 +122,9 @@
     btnResetFilters: document.getElementById("btn-reset-filters"),
 
     // Quiz
+    activeChallengeBanner: document.getElementById("active-challenge-banner"),
+    activeChallengeTitle: document.getElementById("active-challenge-title"),
+    activeChallengeTarget: document.getElementById("active-challenge-target"),
     btnExitQuiz: document.getElementById("btn-exit-quiz"),
     quizTestTitle: document.getElementById("quiz-test-title"),
     quizModeBadge: document.getElementById("quiz-mode-badge"),
@@ -154,7 +165,17 @@
     resultTestName: document.getElementById("result-test-name"),
     resultTimestamp: document.getElementById("result-timestamp"),
     resultTimeSpent: document.getElementById("result-time-spent"),
+    btnChallengeFriend: document.getElementById("btn-challenge-friend"),
     btnShareLink: document.getElementById("btn-share-link"),
+    versusCard: document.getElementById("versus-card"),
+    versusOutcomeBadge: document.getElementById("versus-outcome-badge"),
+    versusTitle: document.getElementById("versus-title"),
+    versusYourScore: document.getElementById("versus-your-score"),
+    versusYourMeta: document.getElementById("versus-your-meta"),
+    versusOppName: document.getElementById("versus-opp-name"),
+    versusOppScore: document.getElementById("versus-opp-score"),
+    versusOppMeta: document.getElementById("versus-opp-meta"),
+    versusDimsList: document.getElementById("versus-dims-list"),
     btnDownloadCard: document.getElementById("btn-download-card"),
     btnCopyResult: document.getElementById("btn-copy-result"),
     btnPrintResult: document.getElementById("btn-print-result"),
@@ -227,6 +248,27 @@
 
     guideModal: document.getElementById("guide-modal"),
     guideModalContent: document.getElementById("guide-modal-content"),
+
+    progressModal: document.getElementById("progress-modal"),
+    progressStreakNow: document.getElementById("progress-streak-now"),
+    progressStreakBest: document.getElementById("progress-streak-best"),
+    progressTotalActs: document.getElementById("progress-total-acts"),
+    progressLineCanvas: document.getElementById("progress-line-canvas"),
+    badgesUnlockedCount: document.getElementById("badges-unlocked-count"),
+    badgesGrid: document.getElementById("badges-grid"),
+    planDimSelect: document.getElementById("plan-dim-select"),
+    planProgressBadge: document.getElementById("plan-progress-badge"),
+    plan7daysList: document.getElementById("plan-7days-list"),
+    planRecommendationNote: document.getElementById("plan-recommendation-note"),
+
+    braingymModal: document.getElementById("braingym-modal"),
+    gymTabs: document.getElementById("gym-tabs"),
+    btnMemStart: document.getElementById("btn-mem-start"),
+    memGrid: document.getElementById("mem-grid"),
+    btnStroopStart: document.getElementById("btn-stroop-start"),
+    stroopOptions: document.getElementById("stroop-options"),
+    btnMathStart: document.getElementById("btn-math-start"),
+    mathOptions: document.getElementById("math-options"),
 
     toast: document.getElementById("app-toast")
   };
@@ -370,11 +412,27 @@
     applyTheme();
   }
 
+  function updateStreakPill() {
+    if (!FEAT || !els.streakCount) return;
+    const st = FEAT.loadStreak();
+    els.streakCount.textContent = String(st.current || 0);
+  }
+
+  const gymCtrl = FEAT
+    ? FEAT.createBrainGymController(() => {
+        FEAT.recordDailyActivity();
+        updateStreakPill();
+      })
+    : null;
+
   function applyTheme() {
     document.documentElement.setAttribute("data-theme", state.theme);
     els.themeIcon.textContent = state.theme === "dark" ? "☀️" : "🌙";
     if (state.view === "result" && state.currentResult) {
       drawRadarChart(state.currentResult.dimensions);
+    }
+    if (FEAT && els.progressModal && !els.progressModal.classList.contains("hidden")) {
+      FEAT.drawProgressLineChart(els.progressLineCanvas, state.history, state.theme === "dark");
     }
   }
 
@@ -412,6 +470,9 @@
   function closeModal(modalId) {
     const el = document.getElementById(modalId);
     if (el) el.classList.add("hidden");
+    if (modalId === "braingym-modal" && gymCtrl) {
+      gymCtrl.stopAllTimers();
+    }
   }
 
   function isAnyModalOpen() {
@@ -420,6 +481,8 @@
       !els.exitConfirmModal.classList.contains("hidden") ||
       !els.historyModal.classList.contains("hidden") ||
       !els.leaderboardModal.classList.contains("hidden") ||
+      !els.progressModal.classList.contains("hidden") ||
+      !els.braingymModal.classList.contains("hidden") ||
       !els.guideModal.classList.contains("hidden")
     );
   }
@@ -628,8 +691,7 @@
     }, 1000);
   }
 
-  function startTest(testId) {
-    const test = DATA.TESTS.find((t) => t.id === testId);
+  function startTestObject(test) {
     if (!test) return;
 
     stopTimer();
@@ -646,10 +708,38 @@
         ? "📖 Chế độ Luyện tập tương tác"
         : "🎯 Chế độ Đánh giá chuẩn";
 
+    if (state.activeChallenge && state.activeChallenge.testId === test.id) {
+      els.activeChallengeBanner.classList.remove("hidden");
+      els.activeChallengeTitle.textContent = `Đang đấu 1v1 với ${state.activeChallenge.opponentName}`;
+      els.activeChallengeTarget.textContent = `Mục tiêu cần vượt: ${state.activeChallenge.shortLabel} ${state.activeChallenge.scoreIndex} (${state.activeChallenge.pct}%)`;
+    } else {
+      state.activeChallenge = null;
+      els.activeChallengeBanner.classList.add("hidden");
+    }
+
     switchView("quiz");
     renderQuizQuestion();
     renderPalette();
     startTimer();
+  }
+
+  function startTest(testId) {
+    const test = DATA.TESTS.find((t) => t.id === testId);
+    if (!test) return;
+    startTestObject(test);
+  }
+
+  function startRandomMix() {
+    if (!FEAT) return;
+    const cycle = ["eq", "iq", "personality"];
+    let domain = state.activeDomain;
+    if (!cycle.includes(domain)) {
+      domain = cycle[state.mixCursor % cycle.length];
+      state.mixCursor += 1;
+    }
+    const mixTest = FEAT.createRandomMixTest(domain);
+    clearShareQueryParam();
+    startTestObject(mixTest);
   }
 
   function getScaleScoreLabel(score, testType) {
@@ -1009,6 +1099,16 @@
     };
   }
 
+  function computeChallengeOutcome(result, opp) {
+    if (result.scoreIndex > opp.scoreIndex) return "win";
+    if (result.scoreIndex < opp.scoreIndex) return "lose";
+    if (result.pct > opp.pct) return "win";
+    if (result.pct < opp.pct) return "lose";
+    if (result.timeSpentSeconds < opp.timeSpentSeconds) return "win";
+    if (result.timeSpentSeconds > opp.timeSpentSeconds) return "lose";
+    return "draw";
+  }
+
   function finalizeQuiz() {
     stopTimer();
     closeModal("submit-confirm-modal");
@@ -1021,6 +1121,18 @@
       new Date().toISOString()
     );
 
+    if (FEAT) {
+      FEAT.recordDailyActivity();
+      updateStreakPill();
+    }
+
+    let challengeWon = false;
+    if (state.activeChallenge && state.activeChallenge.testId === result.test.id) {
+      result.challengeOpponent = state.activeChallenge;
+      challengeWon = computeChallengeOutcome(result, state.activeChallenge) === "win";
+      state.activeChallenge = null;
+    }
+
     const dimPcts = {};
     result.dimensions.forEach((d) => {
       dimPcts[d.id] = d.pct;
@@ -1031,6 +1143,7 @@
       testId: result.test.id,
       testType: result.testType,
       testTitle: result.test.shortTitle || result.test.title,
+      mixQuestionIds: result.test.isDailyMix ? result.test.questions.map((q) => q.id) : undefined,
       timestamp: result.timestamp,
       timeSpentSeconds: result.timeSpentSeconds,
       mode: result.mode,
@@ -1041,6 +1154,7 @@
       eqIndex: result.scoreIndex,
       levelId: result.level.id,
       archetypeName: result.archetype ? result.archetype.name : undefined,
+      challengeWon,
       answers: result.answers,
       dimPcts
     };
@@ -1056,7 +1170,7 @@
     switchView("result");
   }
 
-  // ==================== SHAREABLE URL ENCODING ====================
+  // ==================== SHAREABLE & 1v1 CHALLENGE URL ENCODING ====================
   function encodeSharePayload(obj) {
     const json = JSON.stringify(obj);
     const utf8 = unescape(encodeURIComponent(json));
@@ -1071,10 +1185,18 @@
     return JSON.parse(json);
   }
 
+  function getBaseAppUrl() {
+    if (window.location && window.location.protocol && window.location.protocol.startsWith("http")) {
+      return `${window.location.origin}${window.location.pathname}`;
+    }
+    return window.location ? window.location.href.split("?")[0] : "";
+  }
+
   function buildShareUrl(result) {
     const payload = {
       n: state.playerName || "Người bạn trên Compass",
-      t: result.test.id,
+      t: result.test.isDailyMix ? "mix" : result.test.id,
+      dt: result.testType,
       s: result.scoreIndex,
       r: result.rawScore,
       m: result.maxScore,
@@ -1083,14 +1205,22 @@
       ts: result.timestamp,
       sec: result.timeSpentSeconds
     };
-    const token = encodeSharePayload(payload);
-    const base =
-      window.location && window.location.protocol && window.location.protocol.startsWith("http")
-        ? `${window.location.origin}${window.location.pathname}`
-        : window.location
-          ? window.location.href.split("?")[0]
-          : "";
-    return `${base}?share=${token}`;
+    return `${getBaseAppUrl()}?share=${encodeSharePayload(payload)}`;
+  }
+
+  function buildChallengeUrl(result) {
+    const payload = {
+      c: 1,
+      n: state.playerName || "Đối thủ",
+      t: result.test.isDailyMix ? "mix" : result.test.id,
+      dt: result.testType,
+      q: result.test.isDailyMix ? result.test.questions.map((q) => q.id) : undefined,
+      s: result.scoreIndex,
+      p: result.pct,
+      sec: result.timeSpentSeconds,
+      d: result.dimensions.map((dim) => dim.pct)
+    };
+    return `${getBaseAppUrl()}?challenge=${encodeSharePayload(payload)}`;
   }
 
   function copyShareLink() {
@@ -1107,6 +1237,55 @@
     }
   }
 
+  function copyChallengeLink() {
+    const r = state.currentResult;
+    if (!r) return;
+    const url = buildChallengeUrl(r);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => showToast("Đã sao chép Link Thách Đấu 1v1! Gửi cho bạn bè thi cùng nhé."))
+        .catch(() => showToast("Không thể tự sao chép link thách đấu."));
+    } else {
+      showToast("Trình duyệt không hỗ trợ sao chép tự động.");
+    }
+  }
+
+  function tryOpenChallengeFromUrl() {
+    try {
+      const search = window.location ? window.location.search : "";
+      if (!search) return false;
+      const params = new URLSearchParams(search);
+      const token = params.get("challenge");
+      if (!token) return false;
+
+      const payload = decodeSharePayload(token);
+      let test = null;
+      if (payload.t === "mix" && FEAT && Array.isArray(payload.q)) {
+        test = FEAT.rebuildMixTestFromIds(payload.dt || "eq", payload.q);
+      } else {
+        test = DATA.TESTS.find((t) => t.id === payload.t);
+      }
+      if (!test) return false;
+
+      const cfg = getTestConfig(test);
+      state.activeChallenge = {
+        testId: test.id,
+        opponentName: payload.n || "Đối thủ",
+        scoreIndex: Number(payload.s) || cfg.minIndex,
+        pct: Number(payload.p) || 0,
+        timeSpentSeconds: Number(payload.sec) || 0,
+        dimPcts: Array.isArray(payload.d) ? payload.d.map(Number) : [],
+        shortLabel: cfg.shortLabel
+      };
+
+      startTestObject(test);
+      return true;
+    } catch (_err) {
+      return false;
+    }
+  }
+
   function tryOpenSharedFromUrl() {
     try {
       const search = window.location ? window.location.search : "";
@@ -1116,7 +1295,10 @@
       if (!token) return false;
 
       const payload = decodeSharePayload(token);
-      const test = DATA.TESTS.find((t) => t.id === payload.t);
+      let test = DATA.TESTS.find((t) => t.id === payload.t);
+      if (!test && payload.t === "mix" && FEAT) {
+        test = FEAT.createRandomMixTest(payload.dt || "eq");
+      }
       if (!test) return false;
 
       const cfg = getTestConfig(test);
@@ -1164,7 +1346,12 @@
   }
 
   function clearShareQueryParam() {
-    if (window.history && window.history.replaceState && window.location && window.location.search.includes("share=")) {
+    if (
+      window.history &&
+      window.history.replaceState &&
+      window.location &&
+      (window.location.search.includes("share=") || window.location.search.includes("challenge="))
+    ) {
       window.history.replaceState(null, "", window.location.pathname);
     }
   }
@@ -1390,6 +1577,52 @@
     });
   }
 
+  function renderVersusCard(result) {
+    const opp = result.challengeOpponent;
+    if (!opp) {
+      els.versusCard.classList.add("hidden");
+      return;
+    }
+
+    els.versusCard.classList.remove("hidden");
+    const outcome = computeChallengeOutcome(result, opp);
+    if (outcome === "win") {
+      els.versusOutcomeBadge.textContent = "🏆 BẠN ĐÃ CHIẾN THẮNG!";
+      els.versusOutcomeBadge.style.background = "var(--success)";
+    } else if (outcome === "draw") {
+      els.versusOutcomeBadge.textContent = "🤝 HÒA NHAU CÂN TÀI!";
+      els.versusOutcomeBadge.style.background = "var(--info)";
+    } else {
+      els.versusOutcomeBadge.textContent = "💪 SUÝT THẮNG — THỬ PHỤC THÙ NHÉ!";
+      els.versusOutcomeBadge.style.background = "var(--warning)";
+    }
+
+    els.versusTitle.textContent = `Kết Quả Đối Đầu 1v1 • ${result.test.shortTitle || result.test.title}`;
+    els.versusYourScore.textContent = String(result.scoreIndex);
+    els.versusYourMeta.textContent = `${result.pct}% • ${formatDuration(result.timeSpentSeconds)}`;
+    els.versusOppName.textContent = opp.opponentName;
+    els.versusOppScore.textContent = String(opp.scoreIndex);
+    els.versusOppMeta.textContent = `${opp.pct}% • ${formatDuration(opp.timeSpentSeconds)}`;
+
+    els.versusDimsList.innerHTML = "";
+    result.dimensions.forEach((dim, idx) => {
+      const oppPct = typeof opp.dimPcts[idx] === "number" ? opp.dimPcts[idx] : 0;
+      const row = document.createElement("div");
+      row.className = "versus-dim-row";
+      row.innerHTML = `
+        <div class="versus-dim-top">
+          <span>${dim.meta.icon} ${escapeHtml(dim.meta.shortName)}</span>
+          <span>Bạn ${dim.pct}% vs ${escapeHtml(opp.opponentName)} ${oppPct}%</span>
+        </div>
+        <div class="versus-bars">
+          <div class="vbar-line"><div class="vbar-fill-you" style="width:${dim.pct}%"></div></div>
+          <div class="vbar-line"><div class="vbar-fill-opp" style="width:${oppPct}%"></div></div>
+        </div>
+      `;
+      els.versusDimsList.appendChild(row);
+    });
+  }
+
   function renderResultView(result) {
     const isIq = result.testType === "iq";
     const isPers = result.testType === "personality";
@@ -1402,6 +1635,8 @@
     } else {
       els.sharedResultBanner.classList.add("hidden");
     }
+
+    renderVersusCard(result);
 
     els.resultTestName.textContent = result.test.title;
     els.resultTimestamp.textContent = formatDateTime(result.timestamp);
@@ -1851,7 +2086,10 @@
   function openHistoryRecord(recordId) {
     const rec = state.history.find((h) => h.id === recordId);
     if (!rec) return;
-    const test = DATA.TESTS.find((t) => t.id === rec.testId);
+    let test = DATA.TESTS.find((t) => t.id === rec.testId);
+    if (!test && Array.isArray(rec.mixQuestionIds) && FEAT) {
+      test = FEAT.rebuildMixTestFromIds(getHistoryItemType(rec), rec.mixQuestionIds);
+    }
     if (!test) {
       showToast("Không tìm thấy dữ liệu bộ đề cho bản ghi này.");
       return;
@@ -1871,6 +2109,82 @@
     closeModal("history-modal");
     renderResultView(reconstructed);
     switchView("result");
+  }
+
+  function getRecommendedPlanDim() {
+    if (state.history.length > 0 && state.history[0].dimPcts) {
+      const latestPcts = state.history[0].dimPcts;
+      let minId = "";
+      let minVal = 999;
+      Object.keys(latestPcts).forEach((k) => {
+        if (latestPcts[k] < minVal && FEAT && FEAT.SEVEN_DAY_PLANS[k]) {
+          minVal = latestPcts[k];
+          minId = k;
+        }
+      });
+      if (minId) return { dimId: minId, reason: `Gợi ý theo bài gần nhất (${minVal}%)` };
+    }
+    return { dimId: "self_awareness", reason: "Gợi ý khởi đầu nền tảng EQ" };
+  }
+
+  function renderPlanList() {
+    if (!FEAT || !els.plan7daysList) return;
+    const dimId = state.selectedPlanDim || "self_awareness";
+    const tasks = FEAT.SEVEN_DAY_PLANS[dimId] || [];
+    const progress = FEAT.loadPlanProgress();
+    const doneDays = Array.isArray(progress[dimId]) ? progress[dimId] : [];
+
+    els.planProgressBadge.textContent = `${doneDays.length}/7 ngày`;
+    els.plan7daysList.innerHTML = "";
+    tasks.forEach((txt, idx) => {
+      const isDone = doneDays.includes(idx);
+      const label = document.createElement("label");
+      label.className = `plan-day-item ${isDone ? "done" : ""}`;
+      label.innerHTML = `
+        <input type="checkbox" data-plan-day="${idx}" ${isDone ? "checked" : ""} />
+        <span>${escapeHtml(txt)}</span>
+      `;
+      els.plan7daysList.appendChild(label);
+    });
+  }
+
+  function renderProgressModal() {
+    if (!FEAT) return;
+    const st = FEAT.loadStreak();
+    els.progressStreakNow.textContent = `🔥 ${st.current || 0} ngày`;
+    els.progressStreakBest.textContent = `🏆 ${st.best || 0} ngày`;
+    els.progressTotalActs.textContent = `${st.totalActivities || 0} lượt`;
+
+    FEAT.drawProgressLineChart(els.progressLineCanvas, state.history, state.theme === "dark");
+
+    const badges = FEAT.computeAchievements(state.history, st, FEAT.loadBrainGymRecords());
+    const unlockedCount = badges.filter((b) => b.unlocked).length;
+    els.badgesUnlockedCount.textContent = String(unlockedCount);
+    els.badgesGrid.innerHTML = "";
+    badges.forEach((b) => {
+      const tile = document.createElement("div");
+      tile.className = `badge-tile ${b.unlocked ? "unlocked" : ""}`;
+      tile.innerHTML = `
+        <div class="badge-tile-icon">${b.icon}</div>
+        <div class="badge-tile-title">${escapeHtml(b.title)}</div>
+        <div class="badge-tile-desc">${escapeHtml(b.desc)}</div>
+      `;
+      els.badgesGrid.appendChild(tile);
+    });
+
+    const allDims = FEAT.getAllDimensionsList();
+    if (els.planDimSelect && els.planDimSelect.children.length === 0) {
+      els.planDimSelect.innerHTML = allDims
+        .map((d) => `<option value="${escapeHtml(d.id)}">[${d.group}] ${d.icon} ${escapeHtml(d.name)}</option>`)
+        .join("");
+    }
+    const rec = getRecommendedPlanDim();
+    if (!state.selectedPlanDim) {
+      state.selectedPlanDim = rec.dimId;
+    }
+    if (els.planDimSelect) els.planDimSelect.value = state.selectedPlanDim;
+    if (els.planRecommendationNote) els.planRecommendationNote.textContent = rec.reason;
+    renderPlanList();
   }
 
   function renderGuideModal() {
@@ -1922,6 +2236,19 @@
       openModal("leaderboard-modal");
     });
 
+    els.btnOpenProgress.addEventListener("click", () => {
+      renderProgressModal();
+      openModal("progress-modal");
+    });
+
+    els.btnOpenBraingym.addEventListener("click", () => {
+      if (gymCtrl) {
+        gymCtrl.updateBestDisplays();
+        gymCtrl.switchGame(gymCtrl.getActiveGame());
+      }
+      openModal("braingym-modal");
+    });
+
     els.btnOpenHistory.addEventListener("click", () => {
       renderHistoryModal();
       openModal("history-modal");
@@ -1935,6 +2262,7 @@
     els.btnQuickStart.addEventListener("click", () => startTest("goleman-comprehensive"));
     els.btnQuickStartIq.addEventListener("click", () => startTest("iq-comprehensive"));
     els.btnQuickStartPersonality.addEventListener("click", () => startTest("ocean-bigfive"));
+    els.btnRandomMix.addEventListener("click", startRandomMix);
     els.btnStart5Min.addEventListener("click", () => {
       if (state.activeDomain === "iq") startTest("iq-quick-brain");
       else if (state.activeDomain === "personality") startTest("career-compass");
@@ -2037,9 +2365,52 @@
 
     document.querySelectorAll(".modal-backdrop").forEach((backdrop) => {
       backdrop.addEventListener("click", (e) => {
-        if (e.target === backdrop) backdrop.classList.add("hidden");
+        if (e.target === backdrop) closeModal(backdrop.id);
       });
     });
+
+    // Progress & 7-Day Plan events
+    if (els.planDimSelect) {
+      els.planDimSelect.addEventListener("change", (e) => {
+        state.selectedPlanDim = e.target.value;
+        renderPlanList();
+      });
+    }
+    if (els.plan7daysList) {
+      els.plan7daysList.addEventListener("change", (e) => {
+        const cb = e.target.closest("[data-plan-day]");
+        if (!cb || !FEAT) return;
+        FEAT.togglePlanDay(state.selectedPlanDim, Number(cb.dataset.planDay));
+        renderPlanList();
+      });
+    }
+
+    // Brain Gym events
+    if (gymCtrl) {
+      els.gymTabs.addEventListener("click", (e) => {
+        const tab = e.target.closest("[data-gym-tab]");
+        if (!tab) return;
+        gymCtrl.switchGame(tab.dataset.gymTab);
+      });
+      els.btnMemStart.addEventListener("click", () => gymCtrl.startMemoryGame());
+      els.memGrid.addEventListener("click", (e) => {
+        const cell = e.target.closest("[data-cell-idx]");
+        if (!cell) return;
+        gymCtrl.handleMemoryCellClick(Number(cell.dataset.cellIdx));
+      });
+      els.btnStroopStart.addEventListener("click", () => gymCtrl.startStroopGame());
+      els.stroopOptions.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-stroop-key]");
+        if (!btn) return;
+        gymCtrl.handleStroopChoice(btn.dataset.stroopKey);
+      });
+      els.btnMathStart.addEventListener("click", () => gymCtrl.startMathGame());
+      els.mathOptions.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-math-val]");
+        if (!btn) return;
+        gymCtrl.handleMathChoice(btn.dataset.mathVal);
+      });
+    }
 
     els.btnForceSubmit.addEventListener("click", finalizeQuiz);
     els.btnConfirmExit.addEventListener("click", () => {
@@ -2088,6 +2459,7 @@
         startTest(tid);
       }
     });
+    els.btnChallengeFriend.addEventListener("click", copyChallengeLink);
     els.btnShareLink.addEventListener("click", copyShareLink);
     els.btnDownloadCard.addEventListener("click", downloadResultCardPng);
     els.btnCopyResult.addEventListener("click", copyResultSummary);
@@ -2095,7 +2467,7 @@
     els.btnRetakeTest.addEventListener("click", () => {
       if (state.currentResult) {
         clearShareQueryParam();
-        startTest(state.currentResult.test.id);
+        startTestObject(state.currentResult.test);
       }
     });
     els.btnBackToHub.addEventListener("click", () => {
@@ -2120,6 +2492,8 @@
         closeModal("exit-confirm-modal");
         closeModal("history-modal");
         closeModal("leaderboard-modal");
+        closeModal("progress-modal");
+        closeModal("braingym-modal");
         closeModal("guide-modal");
         return;
       }
@@ -2155,10 +2529,13 @@
     loadPlayerName();
     loadHistory();
     syncDomainCounts();
+    updateStreakPill();
     updateUserStats();
     renderTestsGrid();
     bindEvents();
-    tryOpenSharedFromUrl();
+    if (!tryOpenChallengeFromUrl()) {
+      tryOpenSharedFromUrl();
+    }
   }
 
   init();
