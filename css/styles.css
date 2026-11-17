@@ -2745,3 +2745,274 @@ input {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==================== AD SLOTS (BANNER HAI BÊN + CHÂN TRANG) ==================== */
+.ad-slot {
+  position: relative;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.ad-slot-label {
+  display: block;
+  padding: 6px 12px 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ad-slot-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+  padding: 12px;
+}
+
+.ad-slot-inner img,
+.ad-slot-inner iframe,
+.ad-slot-inner ins {
+  display: block;
+  max-width: 100%;
+  border: 0;
+}
+
+/* Khung dọc cố định hai bên — chỉ hiện khi màn hình đủ rộng */
+.ad-slot-col {
+  position: fixed;
+  top: 96px;
+  width: 160px;
+  max-height: calc(100vh - 140px);
+  height: calc(100vh - 140px);
+  z-index: 30;
+  display: none;
+}
+
+/*
+ * Định vị bám theo container 1180px: mỗi bên (50% - 590px) là mép container,
+ * 160px là bề rộng banner, 8px là khe hở an toàn.
+ * Dùng max() để không bao giờ đẩy banner ra ngoài màn hình.
+ */
+.ad-slot-left {
+  right: calc(50% + 590px + 8px);
+  left: auto;
+}
+
+.ad-slot-right {
+  left: calc(50% + 590px + 8px);
+  right: auto;
+}
+
+/* Từ 1500px trở xuống không đủ chỗ cho banner 160px + khe hở 8px hai bên
+ * (cần tối thiểu 1180 + 2*(160+8) = 1516px) -> ẩn hẳn để không đè nội dung. */
+@media (max-width: 1515px) {
+  .ad-slot-col,
+  .ad-slot-col:not(.hidden) {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1516px) {
+  .ad-slot-col:not(.hidden) {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.ad-slot-col .ad-slot-inner {
+  flex: 1;
+  min-height: 0;
+  padding: 8px;
+  align-items: stretch;
+}
+
+/* Khung ngang chân trang */
+.ad-slot-footer {
+  max-width: 1180px;
+  margin: 0 auto 26px;
+  width: calc(100% - 40px);
+}
+
+.ad-slot-footer .ad-slot-inner {
+  min-height: 96px;
+}
+
+@media (max-width: 640px) {
+  .ad-slot-footer {
+    width: calc(100% - 24px);
+    margin-bottom: 16px;
+  }
+
+  .ad-slot-footer .ad-slot-inner {
+    min-height: 70px;
+    padding: 8px;
+  }
+}
+
+/* Nút đóng quảng cáo */
+.ad-slot-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--transition), color var(--transition);
+}
+
+.ad-slot-close:hover {
+  opacity: 1;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* Trạng thái ẩn */
+.ad-slot-closed,
+.ad-slot-suspended {
+  display: none !important;
+}
+
+/* Không in quảng cáo */
+@media print {
+  .ad-slot {
+    display: none !important;
+  }
+}
+
+/* ---- Banner demo (thay bằng quảng cáo thật trong js/ads.js) ---- */
+.ad-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 18px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  text-align: center;
+  border: 1px dashed var(--border-strong);
+  background: linear-gradient(160deg, var(--bg-muted), var(--bg-elevated));
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.ad-demo:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.ad-demo-indigo {
+  background: linear-gradient(160deg, rgba(79, 70, 229, 0.12), rgba(79, 70, 229, 0.03));
+  border-color: rgba(79, 70, 229, 0.4);
+}
+
+.ad-demo-emerald {
+  background: linear-gradient(160deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.03));
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.ad-demo-amber {
+  background: linear-gradient(120deg, rgba(245, 158, 11, 0.14), rgba(239, 68, 68, 0.08));
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+.ad-demo-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.ad-demo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ad-demo-text strong {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.ad-demo-text span {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.ad-demo-cta {
+  margin-top: 4px;
+  font-size: 0.72rem !important;
+  font-weight: 800;
+  color: var(--primary) !important;
+}
+
+/* Banner dọc: gom nội dung thành cụm gọn ở giữa khung */
+.ad-demo-ad-left,
+.ad-demo-ad-right {
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 28px 12px;
+}
+
+.ad-demo-ad-left .ad-demo-emoji,
+.ad-demo-ad-right .ad-demo-emoji {
+  font-size: 2.6rem;
+  margin-bottom: 6px;
+}
+
+/* Đường phân cách mảnh dưới CTA của banner dọc */
+.ad-demo-ad-left .ad-demo-cta,
+.ad-demo-ad-right .ad-demo-cta {
+  margin-top: 10px;
+}
+
+/* Banner ngang: bố cục hàng ngang */
+.ad-demo-ad-footer {
+  flex-direction: row;
+  gap: 16px;
+  padding: 14px 22px;
+  text-align: left;
+}
+
+.ad-demo-ad-footer .ad-demo-emoji {
+  font-size: 1.8rem;
+}
+
+.ad-demo-ad-footer .ad-demo-text {
+  flex: 1;
+}
+
+.ad-demo-ad-footer .ad-demo-cta {
+  margin-top: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #ffffff !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .ad-demo-ad-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 10px;
+  }
+}
