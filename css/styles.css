@@ -2782,13 +2782,15 @@ input {
   border: 0;
 }
 
-/* Khung dọc cố định hai bên — chỉ hiện khi màn hình đủ rộng */
+/* Khung dọc cố định hai bên — chỉ hiện khi màn hình đủ rộng.
+ * Chiều cao bám theo nội dung (banner thật ~160×600), không ép đầy màn hình
+ * để tránh khung trống bên dưới nội dung quảng cáo. */
 .ad-slot-col {
   position: fixed;
   top: 96px;
   width: 160px;
   max-height: calc(100vh - 140px);
-  height: calc(100vh - 140px);
+  height: auto;
   z-index: 30;
   display: none;
 }
@@ -2826,9 +2828,37 @@ input {
 
 .ad-slot-col .ad-slot-inner {
   flex: 1;
-  min-height: 0;
+  min-height: 600px;
+  max-height: calc(100vh - 186px);
+  overflow: hidden;
   padding: 8px;
   align-items: stretch;
+}
+
+/* Khung dọc có danh sách sản phẩm: chiều cao theo số món, cuộn được nếu vượt màn hình */
+.ad-slot-col .ad-slot-inner.is-list {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Khung ngang trong luồng nội dung (giữa các khối trên trang chủ) */
+.ad-slot-inline {
+  margin: 22px 0;
+}
+
+.ad-slot-inline .ad-slot-inner {
+  min-height: 90px;
+}
+
+@media (max-width: 640px) {
+  .ad-slot-inline {
+    margin: 14px 0;
+  }
+
+  .ad-slot-inline .ad-slot-inner {
+    min-height: 70px;
+    padding: 8px;
+  }
 }
 
 /* Khung ngang chân trang */
@@ -2894,7 +2924,236 @@ input {
   }
 }
 
-/* ---- Banner demo (thay bằng quảng cáo thật trong js/ads.js) ---- */
+/* ---- Banner nhà tài trợ thật (LUMORA) — dựng bởi sponsorCard() trong js/ads.js ---- */
+.ad-sponsor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text);
+  background: linear-gradient(165deg, #1c1a17 0%, #2b2621 55%, #3a3129 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.ad-sponsor:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.ad-sponsor-media {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #14120f;
+}
+
+.ad-sponsor-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ad-sponsor-logo {
+  width: auto !important;
+  height: 92px !important;
+  object-fit: contain !important;
+  padding: 10px 0;
+}
+
+.ad-sponsor-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 14px 14px;
+}
+
+.ad-sponsor-eyebrow {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #d4af37;
+  line-height: 1.3;
+}
+
+.ad-sponsor-headline {
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #f6f2ea;
+}
+
+.ad-sponsor-sub {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: rgba(246, 242, 234, 0.66);
+  /* Giá / thông tin ngắn: không bao giờ tách dòng */
+  white-space: nowrap;
+}
+
+.ad-sponsor-cta {
+  margin-top: 4px;
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #1c1a17;
+  background: #d4af37;
+  padding: 6px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Banner dọc 160×600: danh sách NHIỀU sản phẩm xếp dọc, mỗi món 1 thẻ nhỏ */
+.ad-sponsor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.ad-sponsor-item {
+  display: flex;
+}
+
+.ad-slot-col .ad-sponsor {
+  flex: 1 1 auto;
+  align-self: stretch;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+}
+
+/* Ảnh nằm trên, chữ chiếm trọn bề ngang khung -> tên sản phẩm không bị cắt giữa từ */
+.ad-slot-col .ad-sponsor-media {
+  width: 100%;
+  height: 86px;
+  min-height: 0;
+  flex: 0 0 86px;
+  overflow: hidden;
+}
+
+.ad-slot-col .ad-sponsor-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ad-slot-col .ad-sponsor-body {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 3px;
+  padding: 6px 5px 7px;
+  min-width: 0;
+}
+
+.ad-slot-col .ad-sponsor-eyebrow {
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ad-slot-col .ad-sponsor-headline {
+  font-size: 0.75rem;
+  line-height: 1.22;
+  /* Tên sản phẩm: chiếm CỐ ĐỊNH 2 dòng -> mọi thẻ cao đều nhau.
+   * Chỉ xuống dòng ở ranh giới từ, không băm giữa từ (không mất nghĩa). */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.44em;
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: none;
+  text-wrap: balance;
+}
+
+.ad-slot-col .ad-sponsor-sub {
+  margin-top: 2px;
+  font-size: 0.68rem;
+  line-height: 1.2;
+  color: #d4af37;
+  font-weight: 700;
+  /* Giá là 1 đơn vị không thể chia: "từ 1.050.000 ₫" luôn nằm gọn 1 dòng */
+  white-space: nowrap;
+}
+
+.ad-slot-col .ad-sponsor-cta {
+  display: none;
+}
+
+/* Banner ngang (trong luồng + chân trang): ảnh trái, chữ phải */
+.ad-slot-inline .ad-sponsor,
+.ad-slot-footer .ad-sponsor {
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 0 18px 0 0;
+}
+
+.ad-slot-inline .ad-sponsor-media,
+.ad-slot-footer .ad-sponsor-media {
+  width: 150px;
+  height: 100%;
+  min-height: 92px;
+  flex: 0 0 150px;
+}
+
+.ad-slot-inline .ad-sponsor-body,
+.ad-slot-footer .ad-sponsor-body {
+  flex: 1;
+  padding: 12px 0;
+}
+
+.ad-slot-inline .ad-sponsor-headline,
+.ad-slot-footer .ad-sponsor-headline {
+  font-size: 1rem;
+}
+
+.ad-slot-inline .ad-sponsor-cta,
+.ad-slot-footer .ad-sponsor-cta {
+  margin-top: 6px;
+}
+
+@media (max-width: 640px) {
+  .ad-slot-inline .ad-sponsor,
+  .ad-slot-footer .ad-sponsor {
+    flex-direction: column;
+    padding: 0 0 12px;
+  }
+
+  .ad-slot-inline .ad-sponsor-media,
+  .ad-slot-footer .ad-sponsor-media {
+    width: 100%;
+    flex: 0 0 auto;
+    height: 96px;
+    min-height: 0;
+  }
+
+  .ad-slot-inline .ad-sponsor-body,
+  .ad-slot-footer .ad-sponsor-body {
+    padding: 10px 14px 0;
+  }
+
+  .ad-slot-inline .ad-sponsor-headline,
+  .ad-slot-footer .ad-sponsor-headline {
+    font-size: 0.9rem;
+  }
+}
+
+/* ---- Banner demo (chỉ còn dùng khi chưa có nhà tài trợ) ---- */
 .ad-demo {
   display: flex;
   flex-direction: column;
@@ -2961,6 +3220,14 @@ input {
   font-size: 0.72rem !important;
   font-weight: 800;
   color: var(--primary) !important;
+}
+
+/* Khung 120×600 của AdSense: phải là 120px rộng, không kéo giãn theo .ad-demo */
+.ad-slot-col .ad-slot-inner ins.adsbygoogle,
+.ad-slot-col .ad-slot-inner iframe {
+  width: 120px !important;
+  max-width: 120px;
+  margin: 0 auto;
 }
 
 /* Banner dọc: gom nội dung thành cụm gọn ở giữa khung */

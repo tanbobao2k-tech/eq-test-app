@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="vi" data-theme="light">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EQ, IQ &amp; Tính Cách Compass — Đánh Giá Năng Lực Toàn Diện</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <!-- Khi có AdSense: dán script adsbygoogle.js ở đây. Không để thẻ script mở trong comment. -->
 </head>
+
 <body>
   <div class="app-shell">
     <!-- Top Header -->
@@ -47,13 +48,8 @@
           <span class="streak-pill" id="streak-pill" title="Chuỗi ngày rèn luyện liên tiếp">
             🔥 <strong id="streak-count">0</strong> ngày
           </span>
-          <button
-            type="button"
-            class="icon-btn"
-            id="btn-toggle-theme"
-            title="Chuyển giao diện Sáng / Tối"
-            aria-label="Chuyển giao diện Sáng hoặc Tối"
-          >
+          <button type="button" class="icon-btn" id="btn-toggle-theme" title="Chuyển giao diện Sáng / Tối"
+            aria-label="Chuyển giao diện Sáng hoặc Tối">
             <span id="theme-icon">🌙</span>
           </button>
         </nav>
@@ -67,10 +63,11 @@
         <!-- DÁN MÃ QUẢNG CÁO TẠI ĐÂY (vd: Google AdSense <ins class="adsbygoogle">) -->
       </div>
     </div>
+    <!-- MÃ QUẢNG CÁO: giữ cú pháp một thẻ, không lồng cặp thẻ <ins> đóng/mở ở đây -->
     <div class="ad-slot ad-slot-col ad-slot-right hidden no-print" id="ad-right" aria-label="Quảng cáo">
       <span class="ad-slot-label">Tài trợ</span>
       <div class="ad-slot-inner">
-        <!-- DÁN MÃ QUẢNG CÁO TẠI ĐÂY (vd: Google AdSense <ins class="adsbygoogle">) -->
+        <!-- DÁN MÃ QUẢNG CÁO TẠI ĐÂY (AdSense: ins.adsbygoogle + script push) -->
       </div>
     </div>
 
@@ -148,7 +145,8 @@
             <div class="stat-icon">✨</div>
             <div class="stat-body">
               <span class="stat-label">Hồ sơ Tam giác</span>
-              <strong class="stat-value stat-value-sm" id="stat-dual-profile">Làm EQ, IQ &amp; Tính cách để mở khóa</strong>
+              <strong class="stat-value stat-value-sm" id="stat-dual-profile">Làm EQ, IQ &amp; Tính cách để mở
+                khóa</strong>
             </div>
           </div>
         </div>
@@ -198,12 +196,16 @@
 
           <div class="search-box">
             <span class="search-icon" aria-hidden="true">🔍</span>
-            <input
-              type="search"
-              id="test-search-input"
-              placeholder="Tìm bộ đề (vd: IQ, MBTI, hướng nghiệp, công sở...)"
-              aria-label="Tìm kiếm bộ đề"
-            />
+            <input type="search" id="test-search-input" placeholder="Tìm bộ đề (vd: IQ, MBTI, hướng nghiệp, công sở...)"
+              aria-label="Tìm kiếm bộ đề" />
+          </div>
+        </div>
+
+        <!-- ===== AD SLOT: TRONG LUỒNG TRANG CHỦ (728x90, giữa bộ lọc và danh sách đề) ===== -->
+        <div class="ad-slot ad-slot-inline hidden no-print" id="ad-inline-home" aria-label="Quảng cáo">
+          <span class="ad-slot-label">Tài trợ</span>
+          <div class="ad-slot-inner">
+            <!-- DÁN MÃ QUẢNG CÁO TẠI ĐÂY (AdSense ins.adsbygoogle / ảnh banner 728x90) -->
           </div>
         </div>
 
@@ -308,7 +310,8 @@
 
               <div class="question-footer">
                 <div class="shortcut-hint">
-                  Phím tắt: <kbd>1</kbd>–<kbd>4</kbd> hoặc <kbd>A</kbd>–<kbd>D</kbd> chọn đáp án • <kbd>←</kbd>/<kbd>→</kbd> chuyển câu
+                  Phím tắt: <kbd>1</kbd>–<kbd>4</kbd> hoặc <kbd>A</kbd>–<kbd>D</kbd> chọn đáp án •
+                  <kbd>←</kbd>/<kbd>→</kbd> chuyển câu
                 </div>
                 <div class="question-nav-btns">
                   <button type="button" class="btn btn-secondary" id="btn-prev-question">
@@ -473,7 +476,8 @@
             <div class="card-header-row">
               <div>
                 <h3 id="radar-title">Biểu Đồ Radar 5 Trụ Cột EQ</h3>
-                <p class="card-subtitle" id="radar-subtitle">So sánh năng lực thực tế của bạn với ngưỡng cân bằng chuẩn (75%)</p>
+                <p class="card-subtitle" id="radar-subtitle">So sánh năng lực thực tế của bạn với ngưỡng cân bằng chuẩn
+                  (75%)</p>
               </div>
             </div>
             <div class="radar-canvas-wrap">
@@ -517,7 +521,8 @@
           <div class="section-head">
             <div>
               <h3 id="dimensions-section-title">Phân Tích Chi Tiết Từng Trụ Cột &amp; Bài Tập Thực Hành</h3>
-              <p class="card-subtitle" id="dimensions-section-subtitle">Đánh giá sâu từng năng lực kèm hành động cải thiện thiết thực</p>
+              <p class="card-subtitle" id="dimensions-section-subtitle">Đánh giá sâu từng năng lực kèm hành động cải
+                thiện thiết thực</p>
             </div>
           </div>
           <div class="dimensions-list" id="dimensions-breakdown"></div>
@@ -528,12 +533,15 @@
           <div class="section-head review-head">
             <div>
               <h3 id="review-section-title">Xem Lại Đáp Án &amp; Giải Thích Chi Tiết Từng Câu</h3>
-              <p class="card-subtitle" id="review-section-subtitle">Đối chiếu lựa chọn của bạn với đáp án chuẩn và lời giải chi tiết</p>
+              <p class="card-subtitle" id="review-section-subtitle">Đối chiếu lựa chọn của bạn với đáp án chuẩn và lời
+                giải chi tiết</p>
             </div>
             <div class="review-filters no-print" id="review-filters">
               <button type="button" class="filter-pill active" data-review-filter="all">Tất cả</button>
-              <button type="button" class="filter-pill" data-review-filter="optimal" id="review-filter-optimal-btn">Tối ưu (4/4đ)</button>
-              <button type="button" class="filter-pill" data-review-filter="improve" id="review-filter-improve-btn">Cần lưu ý (&lt; 4đ)</button>
+              <button type="button" class="filter-pill" data-review-filter="optimal" id="review-filter-optimal-btn">Tối
+                ưu (4/4đ)</button>
+              <button type="button" class="filter-pill" data-review-filter="improve" id="review-filter-improve-btn">Cần
+                lưu ý (&lt; 4đ)</button>
             </div>
           </div>
           <div class="review-list" id="review-list"></div>
@@ -552,32 +560,37 @@
     <!-- Footer -->
     <footer class="app-footer no-print">
       <div class="container footer-inner">
-        <span>EQ &amp; IQ Compass — Nền tảng đánh giá Trí tuệ Cảm xúc (EQ), Tư duy Logic (IQ) &amp; Tính cách OCEAN.</span>
+        <span>EQ &amp; IQ Compass — Nền tảng đánh giá Trí tuệ Cảm xúc (EQ), Tư duy Logic (IQ) &amp; Tính cách
+          OCEAN.</span>
         <span>Dữ liệu được lưu cục bộ trên trình duyệt của bạn.</span>
       </div>
     </footer>
   </div>
 
   <!-- ==================== MODAL: INCOMPLETE SUBMISSION CONFIRM ==================== -->
-  <div class="modal-backdrop hidden" id="submit-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+  <div class="modal-backdrop hidden" id="submit-confirm-modal" role="dialog" aria-modal="true"
+    aria-labelledby="confirm-modal-title">
     <div class="modal-card">
       <div class="modal-header">
         <h3 id="confirm-modal-title">Bạn vẫn còn câu chưa trả lời</h3>
         <button type="button" class="modal-close" data-close-modal="submit-confirm-modal" aria-label="Đóng">✕</button>
       </div>
       <div class="modal-body">
-        <p id="confirm-missing-text">Còn một số câu chưa chọn đáp án. Bạn có thể bấm vào số câu bên dưới để trả lời bổ sung hoặc nộp bài luôn.</p>
+        <p id="confirm-missing-text">Còn một số câu chưa chọn đáp án. Bạn có thể bấm vào số câu bên dưới để trả lời bổ
+          sung hoặc nộp bài luôn.</p>
         <div class="missing-chips" id="missing-question-chips"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-close-modal="submit-confirm-modal">Quay lại làm tiếp</button>
+        <button type="button" class="btn btn-secondary" data-close-modal="submit-confirm-modal">Quay lại làm
+          tiếp</button>
         <button type="button" class="btn btn-primary" id="btn-force-submit">Nộp bài luôn</button>
       </div>
     </div>
   </div>
 
   <!-- ==================== MODAL: EXIT QUIZ CONFIRM ==================== -->
-  <div class="modal-backdrop hidden" id="exit-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="exit-modal-title">
+  <div class="modal-backdrop hidden" id="exit-confirm-modal" role="dialog" aria-modal="true"
+    aria-labelledby="exit-modal-title">
     <div class="modal-card modal-card-sm">
       <div class="modal-header">
         <h3 id="exit-modal-title">Thoát khỏi bài làm?</h3>
@@ -594,7 +607,8 @@
   </div>
 
   <!-- ==================== MODAL: HISTORY ==================== -->
-  <div class="modal-backdrop hidden" id="history-modal" role="dialog" aria-modal="true" aria-labelledby="history-modal-title">
+  <div class="modal-backdrop hidden" id="history-modal" role="dialog" aria-modal="true"
+    aria-labelledby="history-modal-title">
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
         <h3 id="history-modal-title">🕘 Lịch Sử Các Bài Đánh Giá EQ • IQ • Tính Cách</h3>
@@ -613,7 +627,8 @@
   </div>
 
   <!-- ==================== MODAL: LEADERBOARD ==================== -->
-  <div class="modal-backdrop hidden" id="leaderboard-modal" role="dialog" aria-modal="true" aria-labelledby="leaderboard-modal-title">
+  <div class="modal-backdrop hidden" id="leaderboard-modal" role="dialog" aria-modal="true"
+    aria-labelledby="leaderboard-modal-title">
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
         <h3 id="leaderboard-modal-title">🏆 Bảng Xếp Hạng &amp; Đối Chiếu Cộng Đồng</h3>
@@ -623,7 +638,8 @@
         <div class="player-name-bar">
           <label for="player-name-input">Tên hiển thị của bạn:</label>
           <div class="player-name-inputs">
-            <input type="text" id="player-name-input" maxlength="30" placeholder="Nhập tên của bạn (vd: Tân, Minh Anh...)" />
+            <input type="text" id="player-name-input" maxlength="30"
+              placeholder="Nhập tên của bạn (vd: Tân, Minh Anh...)" />
             <button type="button" class="btn btn-primary btn-sm" id="btn-save-player-name">Lưu tên</button>
           </div>
         </div>
@@ -644,7 +660,8 @@
   </div>
 
   <!-- ==================== MODAL: EQ & IQ & OCEAN GUIDE ==================== -->
-  <div class="modal-backdrop hidden" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-modal-title">
+  <div class="modal-backdrop hidden" id="guide-modal" role="dialog" aria-modal="true"
+    aria-labelledby="guide-modal-title">
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
         <h3 id="guide-modal-title">💡 Cẩm Nang Toàn Diện: EQ • IQ • Big Five OCEAN</h3>
@@ -658,7 +675,8 @@
   </div>
 
   <!-- ==================== MODAL: PROGRESS, BADGES & 7-DAY PLAN ==================== -->
-  <div class="modal-backdrop hidden" id="progress-modal" role="dialog" aria-modal="true" aria-labelledby="progress-modal-title">
+  <div class="modal-backdrop hidden" id="progress-modal" role="dialog" aria-modal="true"
+    aria-labelledby="progress-modal-title">
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
         <h3 id="progress-modal-title">📈 Tiến Bộ, Huy Hiệu &amp; Lộ Trình 7 Ngày</h3>
@@ -713,7 +731,8 @@
   </div>
 
   <!-- ==================== MODAL: BRAIN GYM MINI-GAMES ==================== -->
-  <div class="modal-backdrop hidden" id="braingym-modal" role="dialog" aria-modal="true" aria-labelledby="braingym-modal-title">
+  <div class="modal-backdrop hidden" id="braingym-modal" role="dialog" aria-modal="true"
+    aria-labelledby="braingym-modal-title">
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
         <h3 id="braingym-modal-title">🎮 Brain Gym — Khu Vực Luyện Não &amp; Phản Xạ</h3>
@@ -791,5 +810,5 @@
   <script src="js/app.js"></script>
   <script src="js/ads.js"></script>
 </body>
-</html>
 
+</html>
